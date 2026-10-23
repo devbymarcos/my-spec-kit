@@ -1,0 +1,41 @@
+{
+  "name": "my-spec-kit",
+  "version": "0.1.0",
+  "description": "Kit de Spec-Driven Development para agentes de IA: templates, skills e uma CLI para instalar em qualquer projeto.",
+  "license": "MIT",
+  "author": "Marcos Juvencio",
+  "type": "module",
+  "bin": {
+    "my-spec-kit": "dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "core",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devbymarcos/my-spec-kit.git"
+  },
+  "keywords": [
+    "spec-driven-development",
+    "claude-code",
+    "agent-skills",
+    "ears"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
+  }
+}
