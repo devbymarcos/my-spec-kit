@@ -80,8 +80,12 @@ my-spec-kit/
 ├── src/
 │   ├── cli/
 │   │   ├── index.ts                   # entrada do bin
-│   │   ├── main.ts                    # parse de argumentos e despacho
-│   │   └── commands/{init,update,doctor,version}.ts
+│   │   ├── main.ts                    # parse de argumentos, despacho e erros do usuário
+│   │   ├── context.ts                 # ambiente da CLI (pasta, terminal, saída), trocado nos testes
+│   │   └── commands/{init,update,doctor}.ts
+│   ├── paths.ts                       # localização de core/ (igual em src/ e dist/)
+│   ├── version.ts                     # versão do kit (package.json)
+│   ├── errors.ts                      # UserError: mensagem sem stack
 │   ├── engine/
 │   │   ├── catalog.ts                 # lê core/ e monta a lista de arquivos do kit por tipo
 │   │   ├── plan.ts                    # compara kit × projeto × manifesto → plano de ações
@@ -162,10 +166,12 @@ Em projetos front, a pessoa pode querer definir cores, tipografia, bordas, modo 
 Marcadores do bloco:
 
 ```markdown
-<!-- my-spec-kit:start v=0.1.0 — conteúdo gerenciado; edite fora deste bloco -->
+<!-- my-spec-kit:start — conteúdo gerenciado pelo my-spec-kit; edite fora deste bloco -->
 ...
 <!-- my-spec-kit:end -->
 ```
+
+A versão não fica no marcador (ela está no manifesto), para o marcador não mudar a cada versão. O bloco usa o mesmo fim de linha (LF ou CRLF) que o arquivo já usa, e o texto fora dele é preservado byte a byte. Marcadores incompletos ou duplicados viram conflito, mesmo com `--force`.
 
 **Conflitos** nunca são resolvidos em silêncio. A CLI lista cada um e a pessoa escolhe: `--force` sobrescreve, guardando uma cópia em `.my-spec-kit/backup/<data>/`, ou mantém a versão local. Templates que o projeto personalizou continuam sendo do projeto; o `update` apenas informa que existe versão nova.
 
@@ -247,22 +253,21 @@ Inserido no `CLAUDE.md`: importa o steering (`@docs/steering/*.md`), descreve o 
 ```ts
 export interface AgentAdapter {
   /** Identificador usado em --agent. */
-  readonly id: AgentId;                     // v1: 'claude'
+  readonly id: string;                      // v1: 'claude'
   readonly displayName: string;
   /** Pasta onde o agente descobre skills de projeto. */
   readonly skillsDir: string;               // '.claude/skills'
   /** Arquivo de instruções que recebe o bloco SDD. */
   readonly instructionsFile: string;        // 'CLAUDE.md'
-  /** Indica se o projeto já parece usar este agente (para sugerir no init). */
-  detect(projectRoot: string): Promise<boolean>;
-  /** Converte a skill do core para o formato do agente. */
-  renderSkill(skill: CoreSkill): string;
+  /** Converte o SKILL.md do core para o formato do agente. */
+  renderSkill(name: string, content: string): string;
   /** Converte o bloco de instruções para o formato do agente. */
-  renderInstructions(block: string): string;
+  renderInstructions(content: string): string;
 }
 ```
 
-- **Claude (v1):** `skillsDir = .claude/skills`, `instructionsFile = CLAUDE.md`; `renderSkill` e `renderInstructions` devolvem o conteúdo sem mudança. `detect` procura `CLAUDE.md` ou `.claude/`.
+- **Claude (v1):** `skillsDir = .claude/skills`, `instructionsFile = CLAUDE.md`; `renderSkill` e `renderInstructions` devolvem o conteúdo sem mudança.
+- Detectar automaticamente quais agentes o projeto usa fica para quando houver mais de um adapter.
 - **Futuros (anotados para não fechar portas):**
   - Codex: skills em `.agents/skills/`, instruções em `AGENTS.md`, sem imports `@` (o bloco precisaria citar os caminhos em vez de importá-los); invocação só explícita via `agents/openai.yaml` com `allow_implicit_invocation: false`.
   - Gemini CLI: lê `.gemini/skills/` e também o alias `.agents/skills/`; pode carregar `AGENTS.md` via `context.fileName`.
@@ -273,12 +278,14 @@ export interface AgentAdapter {
 
 | Comando | Comportamento |
 | --- | --- |
-| `my-spec-kit init [--type api\|front] [--agent claude\|all] [--dry-run] [--yes] [--force]` | Sem `--type`: pergunta; em modo não interativo, `--type` é obrigatório. Monta o plano (criar / já igual / conflito / semente existente), mostra, pede confirmação (`--yes` pula) e aplica; grava o manifesto. Sem `--agent`: usa os agentes detectados ou pergunta. Agentes ainda sem adapter falham com "ainda não suportado nesta versão". `all` significa todos os adapters disponíveis (hoje, só `claude`). Rodar de novo é seguro (idempotente). |
+| `my-spec-kit init [--type api\|front] [--agent claude\|all] [--dry-run] [--yes] [--force]` | Sem `--type`: pergunta; em modo não interativo, `--type` é obrigatório. Se já houver manifesto, usa o tipo registrado e recusa trocar de tipo. Monta o plano (criar / sem mudança / conflito / já existe), mostra, pede confirmação (`--yes` pula; sem terminal, exige `--yes`) e aplica; grava o manifesto. Sem `--agent`: todos os adapters disponíveis. Agentes ainda sem adapter falham com "ainda não suportado nesta versão". `all` significa todos os adapters disponíveis (hoje, só `claude`). Rodar de novo é seguro (idempotente). |
 | `my-spec-kit update [--dry-run] [--yes] [--force]` | Exige manifesto e usa o `projectType` registrado nele. Atualiza os arquivos gerenciados que não foram editados; lista os editados como conflito; acrescenta arquivos novos do kit; remove do projeto os arquivos que o kit deixou de ter, **só** se não foram editados. Sementes nunca são alteradas. |
 | `my-spec-kit doctor` | Só lê. Verifica: manifesto válido; versão instalada × versão da CLI; arquivos gerenciados ausentes ou editados; bloco presente no `CLAUDE.md`; placeholders `<completar>` no steering; Status inválidos e numeração duplicada em `specs/`. Código de saída ≠ 0 quando há erro. |
 | `my-spec-kit version` | Mostra a versão da CLI e, se houver manifesto, a versão instalada no projeto. |
 
 Princípios: **plano antes de agir**, `--dry-run` em todo comando que escreve e nenhum acesso à rede.
+
+Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `2` instalação aplicada, mas sobraram conflitos.
 
 ## 10. Tecnologia
 

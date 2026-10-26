@@ -10,8 +10,9 @@ Cada etapa termina com uma **parada para revisão**: nenhuma etapa começa antes
 | --- | --- |
 | 0. Base do repositório | concluída |
 | 1. Conteúdo do `core/` | concluída |
-| 2. Engine | próxima |
-| 3 a 7 | pendentes |
+| 2. Engine | concluída |
+| 3. Adapter Claude + `init` | concluída |
+| 4 a 7 | pendentes |
 
 ---
 
@@ -47,7 +48,7 @@ O conteúdo vem antes do código porque é ele que carrega a metodologia.
 
 ---
 
-## Etapa 2: Engine (sem CLI)
+## Etapa 2: Engine (concluída)
 
 **Entregáveis**
 - `hash.ts`: sha256 com normalização CRLF → LF.
@@ -70,7 +71,7 @@ O conteúdo vem antes do código porque é ele que carrega a metodologia.
 
 ---
 
-## Etapa 3: Adapter Claude + `init`
+## Etapa 3: Adapter Claude + `init` (concluída)
 
 **Entregáveis**
 - `adapters/types.ts`, `adapters/claude.ts`, `adapters/registry.ts`.
