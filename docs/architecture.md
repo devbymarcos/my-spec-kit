@@ -42,7 +42,7 @@ O `my-spec-kit` instala uma metodologia de Spec-Driven Development em qualquer p
 
 | Fase | Artefato | Skill |
 | --- | --- | --- |
-| 0. Steering (uma vez por projeto, atualizado quando preciso) | `docs/steering/{product,tech,structure}.md` | `/spec-steering [descrição]`: a partir do código, se o projeto existir; com perguntas, se for novo |
+| 0. Steering (uma vez por projeto, atualizado quando preciso) | `docs/steering/{product,tech,structure}.md` | `/spec-steering [product\|tech\|structure] [contexto]`: a partir do contexto da pessoa (texto ou arquivos), do código, se o projeto existir, e de perguntas só sobre o que faltar |
 | 1. Requisitos (o quê e por quê) | `requirements.md` | `/spec-new <feature> [descrição]`, sempre a partir de texto livre |
 | 2. Design (como) | `design.md` | `/spec-design <feature>` |
 | 3. Tarefas (em que passos) | `tasks.md` | `/spec-tasks <feature>` |
@@ -322,3 +322,4 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D11 | Tipo de projeto `api` ou `front` no `init`, escolhendo a versão de `requirements.md`/`design.md` | Template único com todas as seções opcionais | API e front pedem seções realmente diferentes; a seção certa no template é o que guia o modelo. |
 | D12 | `style.md` opcional, criado só via `/spec-style` | Steering visual instalado sempre | Padrões visuais não são obrigatórios em todo projeto front. |
 | D13 | Nenhuma referência a projeto, domínio ou tecnologia real no kit | Exemplos tirados de projetos reais | O kit é público e agnóstico; exemplos concretos viram placeholders. |
+| D14 | `/spec-steering` parte do contexto da pessoa (texto ou arquivos) e do código, e pergunta só as lacunas das seções essenciais (as que outras skills usam), com roteiro por seção; seções que podem esperar (ex.: glossário) ficam `_A definir._`, sem cobrar resposta e sem alerta do `doctor`; aceita restringir a um arquivo | Uma skill por arquivo de steering / questionário fixo sempre completo | Um comando só mantém o fluxo simples; o contexto inicial evita perguntas já respondidas, e o roteiro garante que nenhuma seção essencial fique sem pergunta, e adiar o resto deixa o início rápido. |

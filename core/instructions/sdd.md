@@ -7,7 +7,7 @@ Contexto global do projeto (steering), carregado junto com este arquivo:
 
 Funcionalidades seguem o fluxo de specs: `requirements.md` → `design.md` → `tasks.md` → implementação, com aprovação entre cada fase (Status `rascunho` → `aprovado` → `implementado`). As specs ficam versionadas em `specs/NNN-<feature>/`, com modelos em `specs/_templates/`. Este arquivo e o `docs/steering/` funcionam como a constituição do projeto: todo `design.md` deve passar pelo checklist deles.
 - Comandos: `/spec-new` → `/spec-design` → `/spec-tasks` → `/spec-implement` (uma tarefa por vez)
-- Steering: `/spec-steering` cria ou atualiza `docs/steering/` (a partir do código, ou com perguntas se o projeto for novo)
+- Steering: `/spec-steering [product|tech|structure] [contexto]` cria ou atualiza `docs/steering/` a partir do contexto dado, do código e de perguntas sobre o que faltar
 - Padrões visuais (opcional, só em front): se existir `docs/steering/style.md`, siga-o em qualquer mudança visual.
 - Guia: `specs/README.md`
 - Requisitos sempre em EARS. Dúvidas de regra de negócio são perguntadas, nunca assumidas.

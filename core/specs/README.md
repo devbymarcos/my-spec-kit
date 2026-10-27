@@ -15,7 +15,7 @@ Cada feature passa por quatro fases, sempre nesta ordem. Uma fase só começa de
 
 Para aprovar uma fase, mude o **Status** do arquivo para `aprovado` (ou peça ao agente).
 
-Antes da primeira spec, preencha o steering com `/spec-steering`: ele lê o código, se o projeto já existir, ou conduz perguntas, se o projeto for novo.
+Antes da primeira spec, preencha o steering com `/spec-steering [contexto]`: ele parte do contexto que você passar (texto livre ou caminhos de arquivos), lê o código, se o projeto já existir, e pergunta só o que faltar.
 
 Em projetos front, os padrões visuais (cores, tipografia, modo escuro…) são opcionais. Quando quiser defini-los, use `/spec-style`, que cria `docs/steering/style.md`. Se o arquivo existir, design e implementação passam a segui-lo.
 

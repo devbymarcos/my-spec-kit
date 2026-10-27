@@ -28,7 +28,7 @@ Opções: `--dry-run` mostra o plano sem alterar nada; `--yes` aplica sem pergun
 
 Depois, no Claude Code:
 
-1. `/spec-steering`: preenche o steering a partir do código (ou com perguntas, se o projeto for novo).
+1. `/spec-steering [contexto]`: preenche o steering a partir do contexto que você passar (texto livre ou caminhos de arquivos), do código, se o projeto existir, e de perguntas sobre o que faltar. Use `/spec-steering tech` (ou `product`, `structure`) para trabalhar num arquivo só.
 2. `/spec-new <feature> <descrição>` → `/spec-design` → `/spec-tasks` → `/spec-implement`, aprovando cada fase.
 
 ## Desenvolvimento
