@@ -2,6 +2,7 @@ import { parseArgs } from 'node:util';
 import { UserError } from '../errors.js';
 import { KIT_VERSION } from '../version.js';
 import { initCommand } from './commands/init.js';
+import { updateCommand } from './commands/update.js';
 import { defaultContext, type CliContext } from './context.js';
 
 const HELP = `my-spec-kit ${KIT_VERSION}
@@ -60,6 +61,10 @@ export async function run(argv: string[], overrides: Partial<CliContext> = {}): 
           ctx,
         );
       case 'update':
+        return await updateCommand(
+          { dryRun: values['dry-run'], yes: values.yes, force: values.force },
+          ctx,
+        );
       case 'doctor':
         ctx.err(`O comando "${command}" ainda não foi implementado.\n`);
         return 1;

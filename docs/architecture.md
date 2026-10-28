@@ -81,8 +81,10 @@ my-spec-kit/
 │   ├── cli/
 │   │   ├── index.ts                   # entrada do bin
 │   │   ├── main.ts                    # parse de argumentos, despacho e erros do usuário
-│   │   ├── context.ts                 # ambiente da CLI (pasta, terminal, saída), trocado nos testes
-│   │   └── commands/{init,update,doctor}.ts
+│   │   ├── context.ts                 # ambiente da CLI (pasta, core/, terminal, saída), trocado nos testes
+│   │   └── commands/
+│   │       ├── install.ts             # fluxo comum de init e update (plano → confirmação → aplicação)
+│   │       └── {init,update,doctor}.ts
 │   ├── paths.ts                       # localização de core/ (igual em src/ e dist/)
 │   ├── version.ts                     # versão do kit (package.json)
 │   ├── errors.ts                      # UserError: mensagem sem stack

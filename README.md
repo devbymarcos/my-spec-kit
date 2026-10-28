@@ -7,7 +7,7 @@ Kit de **Spec-Driven Development** para agentes de IA. Instala num projeto exist
 - skills para o agente conduzir cada fase (`/spec-steering`, `/spec-new`, `/spec-design`, `/spec-tasks`, `/spec-implement`) e, em projetos front, definir padrões visuais quando quiser (`/spec-style`);
 - esqueletos de steering (produto, stack, estrutura e comandos de verificação) para o projeto preencher.
 
-> **Estado:** v0.1.0, em desenvolvimento. `init` e `version` funcionam; `update` e `doctor` ainda não. Agente suportado: **Claude Code**.
+> **Estado:** v0.1.0, em desenvolvimento. `init`, `update` e `version` funcionam; `doctor` ainda não. Agente suportado: **Claude Code**.
 
 ## Instalar num projeto
 
@@ -30,6 +30,24 @@ Depois, no Claude Code:
 
 1. `/spec-steering [contexto]`: preenche o steering a partir do contexto que você passar (texto livre ou caminhos de arquivos), do código, se o projeto existir, e de perguntas sobre o que faltar. Use `/spec-steering tech` (ou `product`, `structure`) para trabalhar num arquivo só.
 2. `/spec-new <feature> <descrição>` → `/spec-design` → `/spec-tasks` → `/spec-implement`, aprovando cada fase.
+
+## Atualização
+
+Quando sair uma versão nova do kit, rode na raiz do projeto:
+
+```bash
+npx github:devbymarcos/my-spec-kit update
+```
+
+O `update` usa o tipo e o agente registrados no manifesto e mostra o plano antes de aplicar. Ele:
+
+- atualiza os arquivos do kit que você não editou e cria os que são novos;
+- remove os que saíram do kit, se você não os editou;
+- muda só o conteúdo entre os marcadores do bloco no `CLAUDE.md`;
+- **nunca toca** no steering (`docs/steering/`) nem nas specs;
+- lista como conflito os arquivos que você editou e os mantém como estão. Para sobrescrever, use `--force`, que guarda uma cópia em `.my-spec-kit/backup/`.
+
+Opções: as mesmas do `init` (`--dry-run`, `--yes`, `--force`). O `npx` pode reaproveitar uma versão em cache; para garantir a mais recente, informe a branch ou o commit: `npx github:devbymarcos/my-spec-kit#main update`.
 
 ## Desenvolvimento
 

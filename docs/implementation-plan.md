@@ -12,7 +12,8 @@ Cada etapa termina com uma **parada para revisão**: nenhuma etapa começa antes
 | 1. Conteúdo do `core/` | concluída |
 | 2. Engine | concluída |
 | 3. Adapter Claude + `init` | concluída |
-| 4 a 7 | pendentes |
+| 4. `update` | concluída |
+| 5 a 7 | pendentes |
 
 ---
 
@@ -91,7 +92,7 @@ O conteúdo vem antes do código porque é ele que carrega a metodologia.
 
 ---
 
-## Etapa 4: `update`
+## Etapa 4: `update` (concluída)
 
 **Entregáveis**
 - `update` com `--dry-run`, `--yes` e `--force`, usando o mesmo `plan`/`apply` e o `projectType` do manifesto.

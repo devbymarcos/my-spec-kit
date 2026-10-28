@@ -1,8 +1,11 @@
 import { createInterface } from 'node:readline/promises';
+import { CORE_DIR } from '../paths.js';
 
 /** O que a CLI usa do ambiente; os testes trocam por versões controladas. */
 export interface CliContext {
   cwd: string;
+  /** Pasta com o conteúdo do kit; os testes apontam para uma versão simulada. */
+  coreDir: string;
   /** Há uma pessoa no terminal para responder perguntas. */
   interactive: boolean;
   ask(question: string): Promise<string>;
@@ -14,6 +17,7 @@ export interface CliContext {
 export function defaultContext(): CliContext {
   return {
     cwd: process.cwd(),
+    coreDir: CORE_DIR,
     interactive: Boolean(process.stdin.isTTY && process.stdout.isTTY),
     async ask(question) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
