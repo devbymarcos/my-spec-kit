@@ -156,7 +156,7 @@ O conteúdo vem antes do código porque é ele que carrega a metodologia.
 | --- | --- |
 | Adapters de outros agentes | A interface fica pronta (`architecture.md` › 8). |
 | `/spec-review` | Adiado (`architecture.md` › 3). |
-| Fluxo de git (branch, commit, PR) e escrita em issues | Política de repositório é de cada projeto. O `/spec-new` só **lê** a issue de origem (`architecture.md` › D8). |
+| Abrir PR e escrever em issues | Política de repositório é de cada projeto. O `/spec-new` só **lê** a issue de origem, e o `/git` vai até o push (`architecture.md` › D8). |
 | Mais tipos além de `api`/`front` (ex.: separar web e app) | Por enquanto só dois tipos. |
 | Projeto com API e front no mesmo repositório | Um tipo por instalação na v1. Reavaliar se surgir o caso. |
 | Idioma configurável | Dobra a manutenção do conteúdo. O conteúdo é em PT-BR. |

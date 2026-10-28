@@ -64,6 +64,7 @@ describe('init', () => {
 
     expect(code).toBe(0);
     expect(Object.keys(await snapshot()).sort()).toEqual([
+      '.claude/skills/git/SKILL.md',
       '.claude/skills/spec-design/SKILL.md',
       '.claude/skills/spec-implement/SKILL.md',
       '.claude/skills/spec-new/SKILL.md',

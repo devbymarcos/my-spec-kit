@@ -52,6 +52,7 @@ describe('core content', () => {
 
   it('ships the expected skills', () => {
     expect(skills.sort()).toEqual([
+      'git',
       'spec-design',
       'spec-implement',
       'spec-new',

@@ -4,7 +4,7 @@ Kit de **Spec-Driven Development** para agentes de IA. Instala num projeto exist
 
 - o fluxo de specs `requirements.md` → `design.md` → `tasks.md` → implementação, com aprovação humana entre as fases;
 - templates com requisitos em EARS, comportamento existente preservado e rastreabilidade até as tarefas, em duas versões: **api** e **front**;
-- skills para o agente conduzir cada fase (`/spec-steering`, `/spec-new`, `/spec-design`, `/spec-tasks`, `/spec-implement`) e, em projetos front, definir padrões visuais quando quiser (`/spec-style`);
+- skills para o agente conduzir cada fase (`/spec-steering`, `/spec-new`, `/spec-design`, `/spec-tasks`, `/spec-implement`), fazer commit e push nas regras do projeto (`/git`) e, em projetos front, definir padrões visuais quando quiser (`/spec-style`);
 - esqueletos de steering (produto, stack, estrutura e comandos de verificação) para o projeto preencher.
 
 > **Estado:** v0.1.0, em desenvolvimento. `init`, `update` e `version` funcionam; `doctor` ainda não. Agente suportado: **Claude Code**.
@@ -32,6 +32,7 @@ Depois, no Claude Code:
 2. `/spec-new` → `/spec-design` → `/spec-tasks` → `/spec-implement`, aprovando cada fase. A spec pode começar de duas formas:
    - de texto livre: `/spec-new <feature> <descrição>`, numerada em sequência;
    - de uma issue do repositório remoto: `/spec-new #42 [feature]` (ou o link da issue). A pasta fica `specs/042-<feature>/`, e a issue só é lida, nunca alterada.
+3. `/git [instrução]`: faz o commit e o push seguindo as regras de branch e commit do `CLAUDE.md` (ou o padrão do histórico). Mostra branch, arquivos e mensagem e só executa depois que você confirma.
 
 ## Atualização
 

@@ -47,6 +47,7 @@ O `my-spec-kit` instala uma metodologia de Spec-Driven Development em qualquer p
 | 2. Design (como) | `design.md` | `/spec-design <feature>` |
 | 3. Tarefas (em que passos) | `tasks.md` | `/spec-tasks <feature>` |
 | 4. Implementação | código + `[x]` em `tasks.md` | `/spec-implement <feature> [nº]`, uma tarefa por vez |
+| Commit e push | commits na convenção do projeto | `/git [instrução]` |
 | Revisão | Status `implementado` | Tarefa "Verificação final" do `tasks.md` + revisão humana do PR |
 | (opcional, front) Padrões visuais | `docs/steering/style.md` | `/spec-style [o que definir]` |
 
@@ -63,6 +64,7 @@ O `my-spec-kit` instala uma metodologia de Spec-Driven Development em qualquer p
 my-spec-kit/
 ├── core/                              # conteúdo agnóstico (publicado no pacote)
 │   ├── skills/
+│   │   ├── git/SKILL.md
 │   │   ├── spec-steering/SKILL.md
 │   │   ├── spec-new/SKILL.md
 │   │   ├── spec-design/SKILL.md
@@ -119,6 +121,7 @@ my-spec-kit/
 <projeto>/
 ├── CLAUDE.md                          # NÃO gerenciado; recebe só um bloco marcado
 ├── .claude/skills/
+│   ├── git/SKILL.md                   # gerenciado
 │   ├── spec-steering/SKILL.md         # gerenciado
 │   ├── spec-new/SKILL.md              # gerenciado
 │   ├── spec-design/SKILL.md           # gerenciado
@@ -212,7 +215,7 @@ A versão não fica no marcador (ela está no manifesto), para o marcador não m
 | Verificação manual | `tech.md` › **Verificação manual** | `spec-implement` diz como conferir a entrega. |
 | Avisos ativos (restrições temporárias) | `tech.md` › **Avisos ativos** ou arquivo de instruções | `spec-design` respeita. |
 | Padrões visuais (front, opcional) | `style.md` | `spec-design` e `spec-implement` seguem, se existir. |
-| Política de branch e commit | arquivo de instruções do projeto | `spec-new` segue, se houver. |
+| Política de branch e commit | arquivo de instruções do projeto (sem regra, o histórico de commits) | `spec-new` segue a de branch; `/git` segue as duas. |
 
 ## 7. Conteúdo do `core/`
 
@@ -319,7 +322,7 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D5 | Steering como semente | Steering gerenciado | O conteúdo é 100% do projeto depois de preenchido. |
 | D6 | `core/` em Markdown fora de `src/` | Conteúdo embutido em strings TS | Revisável, legível no GitHub e editável sem build. |
 | D7 | Só Claude Code na v1, com interface de adapter | Vários adapters já na v1 | Foco na primeira entrega; a interface garante a extensão. |
-| D8 | Spec a partir de texto livre ou de uma issue do repositório, lida com a ferramenta que o agente tiver (CLI do host ou integração); a pasta usa o número da issue e a skill nunca escreve na issue. Sem fluxo de git | Spec só de texto livre / comandos de commit e de abertura de PR | A issue costuma ser onde a demanda nasce, e manter o número liga spec e issue sem campo extra. Política de branch e commit continua sendo de cada projeto. |
+| D8 | Spec a partir de texto livre ou de uma issue do repositório, lida com a ferramenta que o agente tiver (CLI do host ou integração); a pasta usa o número da issue e a skill nunca escreve na issue. Commit e push pela skill `/git`, que lê as regras do projeto e só executa após confirmação; abrir PR fica fora | Spec só de texto livre / sem skill de git / regras de commit fixas no kit | A issue costuma ser onde a demanda nasce, e manter o número liga spec e issue sem campo extra. A convenção de commit muda de projeto para projeto, então a skill a lê do arquivo de instruções (ou do histórico) em vez de impor uma. |
 | D9 | Zero dependências de runtime | `commander`, `inquirer` etc. | Escopo pequeno; `npx` mais rápido. |
 | D10 | Hash com normalização LF | Hash binário | Evita falsos "editados" com `core.autocrlf` no Windows. |
 | D11 | Tipo de projeto `api` ou `front` no `init`, escolhendo a versão de `requirements.md`/`design.md` | Template único com todas as seções opcionais | API e front pedem seções realmente diferentes; a seção certa no template é o que guia o modelo. |
