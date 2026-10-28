@@ -2,6 +2,7 @@
 
 - **Status:** rascunho
 - **Spec:** `specs/NNN-nome-da-feature`
+- **Issue:** <link da issue de origem, ou "não há">
 - **Módulo:** <área do sistema afetada>
 
 ## Contexto

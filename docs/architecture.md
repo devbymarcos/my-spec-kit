@@ -43,7 +43,7 @@ O `my-spec-kit` instala uma metodologia de Spec-Driven Development em qualquer p
 | Fase | Artefato | Skill |
 | --- | --- | --- |
 | 0. Steering (uma vez por projeto, atualizado quando preciso) | `docs/steering/{product,tech,structure}.md` | `/spec-steering [product\|tech\|structure] [contexto]`: a partir do contexto da pessoa (texto ou arquivos), do código, se o projeto existir, e de perguntas só sobre o que faltar |
-| 1. Requisitos (o quê e por quê) | `requirements.md` | `/spec-new <feature> [descrição]`, sempre a partir de texto livre |
+| 1. Requisitos (o quê e por quê) | `requirements.md` | `/spec-new <feature> [descrição]` a partir de texto livre, ou `/spec-new #<nº>` a partir de uma issue do repositório (a pasta usa o número da issue) |
 | 2. Design (como) | `design.md` | `/spec-design <feature>` |
 | 3. Tarefas (em que passos) | `tasks.md` | `/spec-tasks <feature>` |
 | 4. Implementação | código + `[x]` em `tasks.md` | `/spec-implement <feature> [nº]`, uma tarefa por vez |
@@ -238,7 +238,7 @@ disable-model-invocation: true
 
 | Template | Seções |
 | --- | --- |
-| `requirements.md` | Cabeçalho (Status, Spec, campo do tipo), Contexto, Fora de escopo, Requisitos (história de usuário + critérios em EARS), Comportamento existente preservado, Requisitos não funcionais do tipo, Perguntas em aberto, Decisões |
+| `requirements.md` | Cabeçalho (Status, Spec, Issue, campo do tipo), Contexto, Fora de escopo, Requisitos (história de usuário + critérios em EARS), Comportamento existente preservado, Requisitos não funcionais do tipo, Perguntas em aberto, Decisões |
 | `design.md` | Visão geral, Impacto em comportamento existente, seções do tipo (ver 5.1), Tratamento de erros, Decisões e alternativas, Estratégia de testes, Checklist do steering + Desvios justificados |
 | `tasks.md` (comum) | Tarefas pequenas com rastreabilidade, bloco de regressão, Verificação final, Cobertura |
 
@@ -318,7 +318,7 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D5 | Steering como semente | Steering gerenciado | O conteúdo é 100% do projeto depois de preenchido. |
 | D6 | `core/` em Markdown fora de `src/` | Conteúdo embutido em strings TS | Revisável, legível no GitHub e editável sem build. |
 | D7 | Só Claude Code na v1, com interface de adapter | Vários adapters já na v1 | Foco na primeira entrega; a interface garante a extensão. |
-| D8 | Spec sempre a partir de texto livre; sem integração com issues nem fluxo de git | Comandos de issue e de commit | Mantém o kit focado em SDD; política de repositório é de cada projeto. |
+| D8 | Spec a partir de texto livre ou de uma issue do repositório, lida com a ferramenta que o agente tiver (CLI do host ou integração); a pasta usa o número da issue e a skill nunca escreve na issue. Sem fluxo de git | Spec só de texto livre / comandos de commit e de abertura de PR | A issue costuma ser onde a demanda nasce, e manter o número liga spec e issue sem campo extra. Política de branch e commit continua sendo de cada projeto. |
 | D9 | Zero dependências de runtime | `commander`, `inquirer` etc. | Escopo pequeno; `npx` mais rápido. |
 | D10 | Hash com normalização LF | Hash binário | Evita falsos "editados" com `core.autocrlf` no Windows. |
 | D11 | Tipo de projeto `api` ou `front` no `init`, escolhendo a versão de `requirements.md`/`design.md` | Template único com todas as seções opcionais | API e front pedem seções realmente diferentes; a seção certa no template é o que guia o modelo. |

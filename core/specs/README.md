@@ -8,7 +8,7 @@ Cada feature passa por quatro fases, sempre nesta ordem. Uma fase só começa de
 
 | Fase | Arquivo | Pergunta que responde | Comando |
 | --- | --- | --- | --- |
-| 1. Requisitos | `requirements.md` | **O quê** e **por quê**? | `/spec-new <nome-da-feature> [descrição]` |
+| 1. Requisitos | `requirements.md` | **O quê** e **por quê**? | `/spec-new <nome-da-feature> [descrição]` ou `/spec-new #<nº-da-issue>` |
 | 2. Design | `design.md` | **Como** vamos construir? | `/spec-design <nome-da-feature>` |
 | 3. Tarefas | `tasks.md` | **Em que passos**? | `/spec-tasks <nome-da-feature>` |
 | 4. Implementação | código | Executar uma tarefa por vez | `/spec-implement <nome-da-feature> [nº-da-tarefa]` |
@@ -33,7 +33,7 @@ specs/
     └── tasks.md
 ```
 
-- Pastas numeradas em sequência (`001-`, `002-`…) em kebab-case.
+- Pastas numeradas (`001-`, `002-`…) em kebab-case. Uma spec criada a partir de uma issue usa o número da issue (`#42` → `042-`); as demais usam o maior número existente mais um. Se o projeto trabalha com issues, comece toda spec por uma issue, para os números não colidirem.
 - O campo **Status** no topo de cada arquivo indica a fase: `rascunho` → `aprovado` → `implementado`.
 - O contexto global (produto, stack, estrutura e comandos de verificação) fica em [docs/steering/](../docs/steering/) e vale para todas as specs.
 - As specs são versionadas: a pasta vai no commit e no PR junto com o código.

@@ -29,7 +29,9 @@ Opções: `--dry-run` mostra o plano sem alterar nada; `--yes` aplica sem pergun
 Depois, no Claude Code:
 
 1. `/spec-steering [contexto]`: preenche o steering a partir do contexto que você passar (texto livre ou caminhos de arquivos), do código, se o projeto existir, e de perguntas sobre o que faltar. Use `/spec-steering tech` (ou `product`, `structure`) para trabalhar num arquivo só.
-2. `/spec-new <feature> <descrição>` → `/spec-design` → `/spec-tasks` → `/spec-implement`, aprovando cada fase.
+2. `/spec-new` → `/spec-design` → `/spec-tasks` → `/spec-implement`, aprovando cada fase. A spec pode começar de duas formas:
+   - de texto livre: `/spec-new <feature> <descrição>`, numerada em sequência;
+   - de uma issue do repositório remoto: `/spec-new #42 [feature]` (ou o link da issue). A pasta fica `specs/042-<feature>/`, e a issue só é lida, nunca alterada.
 
 ## Atualização
 
