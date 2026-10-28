@@ -21,10 +21,10 @@ Entrada: $ARGUMENTS
 5. **Projeto existente: leia o código.** Leia os arquivos de dependências e build (ex.: `package.json`, `*.csproj`, `pyproject.toml`, `go.mod`), a árvore de pastas, a configuração de testes e de CI, o README, o arquivo de instruções do projeto e uma amostra do código de cada camada. Daí saem a stack com versões, os padrões de código **observados** (cite um arquivo de exemplo para cada um), os comandos de verificação que **existem** (scripts, CI), a arquitetura e a árvore de pastas. Do produto, só o que o código e o README mostram (módulos, nomes do domínio).
 6. **Monte um rascunho** juntando, nesta ordem de prioridade: o contexto da pessoa, o código (se houver) e o tipo de projeto registrado em `.my-spec-kit/manifest.json`. Se o contexto da pessoa contradisser o código (ex.: cita uma biblioteca que não está nas dependências), aponte a divergência e pergunte qual vale.
 7. **Pergunte só o essencial que faltar.** O roteiro abaixo separa as seções em dois grupos:
-   - **Essencial:** as outras skills dependem dela. Se o contexto e o código não a responderam, pergunte, com no máximo três perguntas por vez, e diga qual seção cada pergunta preenche. Onde o roteiro diz "proponha", apresente uma proposta e peça só confirmação ou ajustes.
+   - **Essencial:** as outras skills dependem dela. Se o contexto e o código não a responderam, pergunte com perguntas interativas (regra do arquivo de instruções), com opções sugeridas a partir do que já foi decidido, e indique no título qual seção cada pergunta preenche. Onde o roteiro diz "proponha", a proposta é a opção recomendada, e as alternativas viram as outras opções.
    - **Pode esperar:** não pergunte. Preencha só se o contexto ou o código já trouxerem a informação; se não, escreva `_A definir._` na seção. Ela vai sendo completada conforme as specs surgirem, ou quando a pessoa pedir (ex.: `/spec-steering product glossário`). Se a pessoa citar uma dessas seções na entrada, trate-a como essencial.
 
-   Quando a pessoa não souber uma resposta, sugira opções com prós e contras (ou uma proposta baseada no que já foi decidido) e registre só o que ela escolher.
+   Registre só o que a pessoa escolher ou escrever no campo livre.
 
    **`product.md`**
    | Seção | Grupo | Pergunta |

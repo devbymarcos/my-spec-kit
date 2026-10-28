@@ -17,8 +17,8 @@ Entrada: $ARGUMENTS
 4. **Numere a pasta** e crie `specs/NNN-<nome-em-kebab-case>/requirements.md` a partir do template:
    - Issue: `NNN` é o número da issue, com zeros à esquerda até três dígitos (`#42` → `042`; `#1234` → `1234`). O nome vem da entrada ou, se faltar, do título da issue, curto e em kebab-case.
    - Texto livre: `NNN` é o maior número usado em `specs/` mais um.
-   - Se já existir uma pasta com esse número, pare e pergunte como seguir. Não escolha outro número sozinho.
+   - Se já existir uma pasta com esse número, pare e pergunte como seguir (pergunta interativa, ex.: usar o próximo número livre, acrescentar um sufixo ou cancelar). Não escolha outro número sozinho.
 5. Leia o código das áreas que a feature vai tocar e liste em **Comportamento existente preservado** as regras de negócio atuais que não podem mudar, citando o arquivo de cada uma.
 6. Preencha com o que a pessoa descreveu ou com o que a issue diz. No cabeçalho, **Issue** recebe o link da issue (ou "não há"). A issue é ponto de partida, não spec pronta: o que ela deixa vago ou contraditório vira pergunta. Não altere nem comente a issue. Escreva os critérios de aceite no formato EARS, numerados e testáveis, com valores concretos (limites, mensagens, códigos ou status). O que não estiver claro vai em **Perguntas em aberto** — não invente regra de negócio. Requisito que contradiz uma regra preservada também vira pergunta.
 7. Mantenha **Status: rascunho**. Não crie `design.md`, `tasks.md` nem código.
-8. Termine resumindo os requisitos e listando as perguntas em aberto, pedindo revisão e aprovação antes de `/spec-design`. Quando a pessoa responder, registre as respostas em **Decisões**.
+8. Termine resumindo os requisitos. Se houver perguntas em aberto, faça-as como perguntas interativas (regra do arquivo de instruções), com respostas sugeridas. Registre cada resposta em **Decisões**, ajuste os critérios afetados e tire a pergunta de **Perguntas em aberto**; o que a pessoa preferir deixar para depois continua lá. Depois peça revisão e aprovação antes de `/spec-design`.

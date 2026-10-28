@@ -232,6 +232,7 @@ disable-model-invocation: true
 - `name` e `description` são os campos comuns aos agentes que suportam o padrão.
 - `argument-hint` e `disable-model-invocation` são **do Claude Code**. Na v1 eles ficam diretamente na fonte, porque o único adapter é o Claude. Quando houver outro agente, o adapter dele remove ou traduz esses campos.
 - O corpo usa `$ARGUMENTS`, que também é sintaxe do Claude Code e fica a cargo de futuros adapters.
+- Perguntas à pessoa são sempre interativas, com respostas sugeridas e campo livre. A regra fica uma vez no bloco de instruções (7.4), que cita a ferramenta do Claude Code (`AskUserQuestion`); as skills só apontam para ela. Num agente sem ferramenta equivalente, o adapter troca o texto da regra por perguntas com opções numeradas.
 - Todas as skills usam `disable-model-invocation: true`: só rodam quando a pessoa chama.
 
 ### 7.2 Templates de spec
@@ -248,7 +249,7 @@ disable-model-invocation: true
 
 ### 7.4 Bloco de instruções (`core/instructions/sdd.md`)
 
-Inserido no `CLAUDE.md`: importa o steering (`@docs/steering/*.md`), descreve o fluxo e os comandos e fixa as regras gerais ("spec é a fonte da verdade", "regra existente não muda sem critério aprovado", requisitos em EARS, `style.md` se existir). Nada sobre stack ou idioma de código.
+Inserido no `CLAUDE.md`: importa o steering (`@docs/steering/*.md`), descreve o fluxo e os comandos e fixa as regras gerais (perguntas interativas com respostas sugeridas, "spec é a fonte da verdade", "regra existente não muda sem critério aprovado", requisitos em EARS, `style.md` se existir). Nada sobre stack ou idioma de código.
 
 ## 8. Adapters
 
@@ -325,3 +326,4 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D12 | `style.md` opcional, criado só via `/spec-style` | Steering visual instalado sempre | Padrões visuais não são obrigatórios em todo projeto front. |
 | D13 | Nenhuma referência a projeto, domínio ou tecnologia real no kit | Exemplos tirados de projetos reais | O kit é público e agnóstico; exemplos concretos viram placeholders. |
 | D14 | `/spec-steering` parte do contexto da pessoa (texto ou arquivos) e do código, e pergunta só as lacunas das seções essenciais (as que outras skills usam), com roteiro por seção; seções que podem esperar (ex.: glossário) ficam `_A definir._`, sem cobrar resposta e sem alerta do `doctor`; aceita restringir a um arquivo | Uma skill por arquivo de steering / questionário fixo sempre completo | Um comando só mantém o fluxo simples; o contexto inicial evita perguntas já respondidas, e o roteiro garante que nenhuma seção essencial fique sem pergunta, e adiar o resto deixa o início rápido. |
+| D15 | Perguntas sempre interativas (ferramenta de perguntas do agente), com opções sugeridas, a recomendada primeiro, e campo livre; regra única no bloco de instruções | Perguntas numeradas respondidas por texto / regra repetida em cada skill | Responder escolhendo é mais rápido que digitar o número e a resposta, e a sugestão já traz o que o contexto indica. Uma regra só evita que as skills divirjam. |
