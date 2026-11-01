@@ -4,8 +4,11 @@ import type { AgentAdapter } from './types.js';
 export const claudeAdapter: AgentAdapter = {
   id: 'claude',
   displayName: 'Claude Code',
-  skillsDir: '.claude/skills',
   instructionsFile: 'CLAUDE.md',
+  instructionsSource: 'instructions/sdd.md',
+  specs: true,
+  steeringHint: 'rode /spec-steering',
+  skillTarget: (name, file) => `.claude/skills/${name}/${file}`,
   renderSkill: (_name, content) => content,
   renderInstructions: (content) => content,
 };

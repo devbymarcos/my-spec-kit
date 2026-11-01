@@ -2,7 +2,7 @@
 
 - **Data:** 2026-10-23
 - **Referência:** [arquitetura](architecture.md)
-- **Escopo:** v1 só com Claude Code.
+- **Escopo:** v1 com Claude Code; adapter do Gemini CLI acrescentado em 2026-11-01 (arquitetura, D16).
 
 Cada etapa termina com uma **parada para revisão**: nenhuma etapa começa antes da aprovação da anterior. As etapas são pequenas o bastante para virar um PR cada.
 

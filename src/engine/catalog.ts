@@ -23,12 +23,13 @@ export async function buildCatalog(
     for (const skill of await listDirs(join(coreDir, 'skills'))) {
       const onlyFor = TYPE_ONLY_SKILLS[skill];
       if (onlyFor && onlyFor !== projectType) continue;
+      if (adapter.skills && !adapter.skills.includes(skill)) continue;
 
       for (const file of await listFiles(join(coreDir, 'skills', skill))) {
         const source = `skills/${skill}/${file}`;
         const content = await read(source);
         add({
-          target: `${adapter.skillsDir}/${skill}/${file}`,
+          target: adapter.skillTarget(skill, file),
           source,
           kind: 'managed',
           content: file === 'SKILL.md' ? adapter.renderSkill(skill, content) : content,
@@ -38,19 +39,21 @@ export async function buildCatalog(
 
     add({
       target: adapter.instructionsFile,
-      source: 'instructions/sdd.md',
+      source: adapter.instructionsSource,
       kind: 'block',
-      content: adapter.renderInstructions(await read('instructions/sdd.md')),
+      content: adapter.renderInstructions(await read(adapter.instructionsSource)),
     });
   }
 
-  add({ target: 'specs/README.md', source: 'specs/README.md', kind: 'managed', content: await read('specs/README.md') });
+  if (adapters.some((a) => a.specs)) {
+    add({ target: 'specs/README.md', source: 'specs/README.md', kind: 'managed', content: await read('specs/README.md') });
 
-  // Templates comuns ficam na raiz de _templates/; os do tipo, em _templates/<tipo>/.
-  for (const dir of ['specs/_templates', `specs/_templates/${projectType}`]) {
-    for (const file of await listFiles(join(coreDir, dir), { recursive: false })) {
-      const source = `${dir}/${file}`;
-      add({ target: `specs/_templates/${file}`, source, kind: 'managed', content: await read(source) });
+    // Templates comuns ficam na raiz de _templates/; os do tipo, em _templates/<tipo>/.
+    for (const dir of ['specs/_templates', `specs/_templates/${projectType}`]) {
+      for (const file of await listFiles(join(coreDir, dir), { recursive: false })) {
+        const source = `${dir}/${file}`;
+        add({ target: `specs/_templates/${file}`, source, kind: 'managed', content: await read(source) });
+      }
     }
   }
 

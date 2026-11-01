@@ -8,14 +8,15 @@ import { defaultContext, type CliContext } from './context.js';
 const HELP = `my-spec-kit ${KIT_VERSION}
 
 Uso:
-  my-spec-kit init [--type api|front] [--agent claude|all] [--dry-run] [--yes] [--force]
+  my-spec-kit init [--type api|front] [--agent claude|gemini|antigravity|all] [--dry-run] [--yes] [--force]
   my-spec-kit update [--dry-run] [--yes] [--force]
   my-spec-kit doctor
   my-spec-kit version
 
 Opções:
   --type      tipo de projeto: api ou front (pergunta se não for informado)
-  --agent     agente de IA (padrão: todos os disponíveis)
+  --agent     agente de IA: claude, gemini, antigravity, lista separada por vírgula ou all
+              (padrão: os já instalados; num projeto novo, claude)
   --dry-run   mostra o que seria feito, sem alterar nada
   --yes       aplica sem pedir confirmação
   --force     sobrescreve arquivos em conflito, guardando cópia em .my-spec-kit/backup/

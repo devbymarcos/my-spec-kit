@@ -13,7 +13,9 @@ Entrada: $ARGUMENTS
    - Se a primeira palavra for `product`, `tech` ou `structure`, trabalhe só nesse arquivo. Sem ela, trabalhe nos três, nesta ordem: `product.md` → `tech.md` → `structure.md`.
    - O resto é o **contexto inicial** da pessoa: texto livre (o que o produto é, para quem, decisões já tomadas) e/ou caminhos de arquivos (briefing, notas, documento de requisitos, README, decisões de arquitetura). Leia cada arquivo citado. Se um caminho não existir, avise e siga com o restante.
    - Se a entrada estiver vazia e o projeto for novo, comece com **uma** pergunta aberta: "Descreva o projeto com suas palavras: o que é, para quem, e o que já está decidido (stack, arquitetura, padrões). Se tiver um documento com isso, me passe o caminho." Use a resposta como contexto inicial.
-2. Leia `docs/steering/product.md`, `tech.md` e `structure.md`. Mantenha as seções que já existem nesses arquivos. Se algum já estiver preenchido (sem `<completar>`), trate como **atualização**: proponha as mudanças antes de aplicar e não apague nem reescreva conteúdo sem perguntar.
+2. Leia `docs/steering/product.md`, `tech.md` e `structure.md` e todos os outros arquivos de `docs/steering/`. Mantenha as seções que já existem nesses arquivos. Se algum já estiver preenchido (sem `<completar>`), trate como **atualização**: proponha as mudanças antes de aplicar e não apague nem reescreva conteúdo sem perguntar.
+   - **Steering escrito antes do kit**, com outros títulos ou outra organização: entenda primeiro o que já está definido. Para cada seção do roteiro (passo 7), procure a informação equivalente no que já existe, mesmo com outro título ou em outro arquivo, e considere-a respondida. Diga à pessoa onde encontrou cada uma.
+   - Não reorganize, não renomeie seções e não mova conteúdo para o modelo do kit sem pedido. Acrescente só as seções essenciais que faltam de fato, no arquivo onde o modelo as prevê.
 3. Siga a regra de branch do arquivo de instruções do projeto, se houver.
 4. Descubra o modo e diga qual foi escolhido:
    - **Projeto existente:** há código-fonte além de documentação, specs e configuração.

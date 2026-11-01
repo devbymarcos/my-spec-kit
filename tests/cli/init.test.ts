@@ -95,6 +95,72 @@ describe('init', () => {
     expect((await manifest()).projectType).toBe('front');
   });
 
+  it('installs the kit for Gemini CLI as commands and GEMINI.md', async () => {
+    expect(await init(['--type', 'api', '--agent', 'gemini', '--yes'])).toBe(0);
+
+    const files = Object.keys(await snapshot());
+    expect(files).toContain('.gemini/commands/spec-new.toml');
+    expect(files).not.toContain('.gemini/commands/spec-style.toml');
+    expect(files.some((p) => p.startsWith('.claude/') || p === 'CLAUDE.md')).toBe(false);
+    expect(await read('GEMINI.md')).toContain('@docs/steering/tech.md');
+    expect((await manifest()).agents).toEqual(['gemini']);
+    expect(output).toContain('no Gemini CLI, rode /spec-steering');
+  });
+
+  it('installs only the project rules and the steering for Antigravity', async () => {
+    expect(await init(['--type', 'front', '--agent', 'antigravity', '--yes'])).toBe(0);
+
+    expect(Object.keys(await snapshot()).sort()).toEqual([
+      '.agents/rules/spec-steering.md',
+      '.my-spec-kit/manifest.json',
+      'AGENTS.md',
+      'docs/steering/product.md',
+      'docs/steering/structure.md',
+      'docs/steering/tech.md',
+    ]);
+    expect(await read('AGENTS.md')).toContain('@[tech.md](docs/steering/tech.md)');
+    expect((await manifest()).files['AGENTS.md']).toMatchObject({ kind: 'block', source: 'instructions/rules.md' });
+    expect(output).toContain('no Antigravity, peça "preencha o steering do projeto"');
+  });
+
+  it('keeps an existing steering, including extra files, and says it will be used', async () => {
+    await put('docs/steering/tech.md', '# Tech\n\n## Testes\n`make test`\n');
+    await put('docs/steering/api.md', '# Padrões da API\n');
+
+    expect(await init(['--type', 'api', '--agent', 'antigravity', '--yes'])).toBe(0);
+
+    expect(await read('docs/steering/tech.md')).toBe('# Tech\n\n## Testes\n`make test`\n');
+    expect(await read('docs/steering/api.md')).toBe('# Padrões da API\n');
+    expect(output).toMatch(/já existe\s+docs\/steering\/tech\.md/);
+    expect(output).toContain('O steering que já existia (docs/steering/api.md, docs/steering/tech.md) foi mantido');
+    expect(output).not.toContain('Próximo passo');
+  });
+
+  it('keeps the specs flow when Antigravity is installed next to another agent', async () => {
+    expect(await init(['--type', 'api', '--agent', 'claude,antigravity', '--yes'])).toBe(0);
+
+    const files = Object.keys(await snapshot());
+    expect(files).toContain('specs/_templates/design.md');
+    expect(files).toContain('.claude/skills/spec-new/SKILL.md');
+    expect(files.filter((p) => p.startsWith('.agents/'))).toEqual(['.agents/rules/spec-steering.md']);
+  });
+
+  it('adds an agent without removing the ones already installed', async () => {
+    await init(['--type', 'api', '--yes']);
+
+    expect(await init(['--agent', 'gemini', '--yes'])).toBe(0);
+
+    const files = Object.keys(await snapshot());
+    expect(files).toContain('.claude/skills/spec-new/SKILL.md');
+    expect(files).toContain('.gemini/commands/spec-new.toml');
+    expect((await manifest()).agents).toEqual(['claude', 'gemini']);
+  });
+
+  it('accepts a comma-separated list of agents', async () => {
+    expect(await init(['--type', 'api', '--agent', 'claude,gemini', '--yes'])).toBe(0);
+    expect((await manifest()).agents).toEqual(['claude', 'gemini']);
+  });
+
   it('requires --type when it cannot ask', async () => {
     expect(await init(['--yes'])).toBe(1);
     expect(output).toContain('--type');

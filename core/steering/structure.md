@@ -12,4 +12,4 @@
 
 ## Ordem das fundações
 
-<completar: em que ordem as tarefas costumam ser construídas (ex.: modelo de dados → regras → interface). Usada pelo `/spec-tasks`.>
+<completar: em que ordem as tarefas costumam ser construídas (ex.: modelo de dados → regras → interface). Usada para ordenar as tarefas.>

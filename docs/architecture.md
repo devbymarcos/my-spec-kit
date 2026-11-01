@@ -2,7 +2,7 @@
 
 - **Status:** aprovada
 - **Data:** 2026-10-23
-- **Escopo da v1:** somente **Claude Code**. A arquitetura mantém um ponto de extensão para outros agentes (Codex, Gemini CLI e outros), mas nenhum desses adapters faz parte da v1.
+- **Escopo da v1:** **Claude Code** e, desde 2026-11-01, **Gemini CLI** (D16) e **Antigravity**, só com as regras do projeto (D17). Outros agentes (Codex e outros) entram pelo mesmo ponto de extensão, os adapters.
 
 ## 1. Objetivo e princípios
 
@@ -25,8 +25,9 @@ O `my-spec-kit` instala uma metodologia de Spec-Driven Development em qualquer p
                                 │ lê
 ┌────────────┐   comando   ┌────▼─────────┐  pede destino/forma  ┌──────────────┐
 │  CLI       ├────────────►│  engine      │◄────────────────────►│  adapters/   │
-│ init       │             │ plano →      │                      │  claude (v1) │
-│ update     │             │ confirmação →│                      │  outros (fut)│
+│ init       │             │ plano →      │                      │  claude      │
+│ update     │             │ confirmação →│                      │  gemini      │
+│            │             │              │                      │  antigravity │
 │ doctor     │             │ aplicação    │                      └──────────────┘
 │ version    │             │ manifesto    │
 └────────────┘             └────┬─────────┘
@@ -78,7 +79,9 @@ my-spec-kit/
 │   │       ├── api/{requirements,design}.md
 │   │       └── front/{requirements,design}.md
 │   ├── steering/{product,tech,structure}.md
-│   └── instructions/sdd.md            # bloco inserido no arquivo de instruções do agente
+│   └── instructions/
+│       ├── sdd.md                     # bloco do fluxo de specs (agentes com skills)
+│       └── rules.md                   # bloco só com as regras do projeto (Antigravity)
 ├── src/
 │   ├── cli/
 │   │   ├── index.ts                   # entrada do bin
@@ -100,6 +103,9 @@ my-spec-kit/
 │   └── adapters/
 │       ├── types.ts                   # interface AgentAdapter
 │       ├── claude.ts
+│       ├── gemini.ts                  # skills → comandos TOML, bloco → GEMINI.md
+│       ├── antigravity.ts             # só regras: AGENTS.md + roteiro do steering
+│       ├── text.ts                    # frontmatter e trocas de texto usadas pelos adapters
 │       └── registry.ts                # lista de adapters disponíveis
 ├── tests/
 │   ├── core/                          # conteúdo do kit (frontmatter, seções obrigatórias)
@@ -138,6 +144,22 @@ my-spec-kit/
 ```
 
 As pastas de feature (`specs/NNN-*/`) **nunca** são tocadas pela CLI.
+
+**Gemini CLI** (`--agent gemini`): no lugar de `.claude/skills/` e `CLAUDE.md`, instala `.gemini/commands/<skill>.toml` (um comando por skill, gerenciado) e o bloco no `GEMINI.md`. `specs/`, `docs/steering/` e o manifesto são os mesmos; com os dois agentes, eles são instalados uma vez só.
+
+**Antigravity** (`--agent antigravity`): instala só o necessário para o agente conhecer as regras do projeto, sem o fluxo de specs nem comandos:
+
+```
+<projeto>/
+├── AGENTS.md                          # NÃO gerenciado; recebe o bloco de core/instructions/rules.md
+├── .agents/rules/spec-steering.md     # gerenciado; roteiro de preenchimento do steering
+├── docs/steering/*.md                 # semente, como nos outros agentes
+└── .my-spec-kit/manifest.json
+```
+
+O próprio Antigravity preenche o steering: a pessoa pede (ex.: "preencha o steering do projeto") e ele carrega o roteiro. `specs/` só é instalado se outro agente com o fluxo de specs também estiver no projeto.
+
+**Mudar de agente no meio do projeto** (ex.: de Claude para Antigravity): `init --agent antigravity` soma o agente novo e não remove nada do anterior. Steering, specs e `CLAUDE.md` ficam como estão. O bloco do Antigravity manda ler as regras de projeto escritas nos arquivos de instruções de outros agentes e seguir as specs que já existem. Remover um agente do projeto ainda não é suportado.
 
 ### 5.1 Tipo de projeto
 
@@ -233,9 +255,10 @@ disable-model-invocation: true
 ```
 
 - `name` e `description` são os campos comuns aos agentes que suportam o padrão.
-- `argument-hint` e `disable-model-invocation` são **do Claude Code**. Na v1 eles ficam diretamente na fonte, porque o único adapter é o Claude. Quando houver outro agente, o adapter dele remove ou traduz esses campos.
-- O corpo usa `$ARGUMENTS`, que também é sintaxe do Claude Code e fica a cargo de futuros adapters.
-- Perguntas à pessoa são sempre interativas, com respostas sugeridas e campo livre. A regra fica uma vez no bloco de instruções (7.4), que cita a ferramenta do Claude Code (`AskUserQuestion`); as skills só apontam para ela. Num agente sem ferramenta equivalente, o adapter troca o texto da regra por perguntas com opções numeradas.
+- `argument-hint` e `disable-model-invocation` são **do Claude Code** e ficam diretamente na fonte. Os adapters de outros agentes removem ou traduzem esses campos.
+- O corpo usa `$ARGUMENTS`, que também é sintaxe do Claude Code; o adapter de cada agente troca pela sintaxe dele.
+- O corpo não pode conter `!{`, `@{` nem `'''`: o Gemini CLI executa ou injeta os dois primeiros, e o terceiro fecha a string do comando TOML. Um teste garante isso.
+- Perguntas à pessoa são sempre interativas, com respostas sugeridas e campo livre. A regra fica uma vez no bloco de instruções (7.4), que cita a ferramenta do Claude Code (`AskUserQuestion`); as skills só apontam para ela. O adapter de cada agente troca o nome da ferramenta e, se ela não garantir campo livre, pede a opção "Outro (descrever)".
 - Todas as skills usam `disable-model-invocation: true`: só rodam quando a pessoa chama.
 
 ### 7.2 Templates de spec
@@ -250,21 +273,33 @@ disable-model-invocation: true
 
 `product.md` (visão, módulos, usuários, glossário), `tech.md` (tipo de projeto, stack, padrões de código, comandos de verificação, verificação manual, entregas obrigatórias, checklist de design, avisos ativos) e `structure.md` (arquitetura, ordem das fundações). Todos vêm com placeholders `<completar>`, preenchidos pelo `/spec-steering`.
 
+**Steering que já existe** (escrito antes do kit): nunca é alterado pela CLI, e só as sementes que faltam são criadas. Os blocos de instruções mandam procurar cada informação pelo conteúdo, não pelo título, e tratar os outros arquivos de `docs/steering/` como regras do projeto. O roteiro de steering mapeia o que já existe para as seções do modelo, sem reorganizar, e acrescenta só o que falta de fato. O `init` avisa que o steering existente foi mantido, em vez de pedir para preenchê-lo.
+
 ### 7.4 Bloco de instruções (`core/instructions/sdd.md`)
 
 Inserido no `CLAUDE.md`: importa o steering (`@docs/steering/*.md`), descreve o fluxo e os comandos e fixa as regras gerais (perguntas interativas com respostas sugeridas, "spec é a fonte da verdade", "regra existente não muda sem critério aprovado", requisitos em EARS, `style.md` se existir). Nada sobre stack ou idioma de código.
+
+`core/instructions/rules.md` é o bloco dos agentes sem o fluxo de specs (hoje, o Antigravity): importa o mesmo steering e fixa as regras de trabalho a partir dele (estrutura de `structure.md`, padrões e comandos de verificação de `tech.md`, checklist e avisos, `style.md` se existir, regra de negócio existente só muda a pedido, steering com `<completar>` é oferecido para preenchimento, perguntas com opções sugeridas). Não cita comandos.
 
 ## 8. Adapters
 
 ```ts
 export interface AgentAdapter {
   /** Identificador usado em --agent. */
-  readonly id: string;                      // v1: 'claude'
+  readonly id: string;                      // 'claude' | 'gemini' | 'antigravity'
   readonly displayName: string;
-  /** Pasta onde o agente descobre skills de projeto. */
-  readonly skillsDir: string;               // '.claude/skills'
   /** Arquivo de instruções que recebe o bloco SDD. */
-  readonly instructionsFile: string;        // 'CLAUDE.md'
+  readonly instructionsFile: string;        // 'CLAUDE.md' | 'GEMINI.md' | 'AGENTS.md'
+  /** Bloco do core inserido no arquivo de instruções. */
+  readonly instructionsSource: string;      // 'instructions/sdd.md' | 'instructions/rules.md'
+  /** Skills que o agente instala; sem a lista, todas. */
+  readonly skills?: readonly string[];
+  /** Instala o fluxo de specs (specs/README.md e templates). */
+  readonly specs: boolean;
+  /** Como a pessoa começa a preencher o steering (fim do init). */
+  readonly steeringHint: string;
+  /** Caminho no projeto de um arquivo da skill. */
+  skillTarget(name: string, file: string): string;
   /** Converte o SKILL.md do core para o formato do agente. */
   renderSkill(name: string, content: string): string;
   /** Converte o bloco de instruções para o formato do agente. */
@@ -272,11 +307,12 @@ export interface AgentAdapter {
 }
 ```
 
-- **Claude (v1):** `skillsDir = .claude/skills`, `instructionsFile = CLAUDE.md`; `renderSkill` e `renderInstructions` devolvem o conteúdo sem mudança.
-- Detectar automaticamente quais agentes o projeto usa fica para quando houver mais de um adapter.
+- **Claude:** skills em `.claude/skills/<nome>/`, `instructionsFile = CLAUDE.md`; `renderSkill` e `renderInstructions` devolvem o conteúdo sem mudança.
+- **Gemini CLI:** cada skill vira um comando de projeto, `.gemini/commands/<nome>.toml`, com `description` (a do frontmatter + `Uso: /<nome> <argument-hint>`) e `prompt` (o corpo, com `$ARGUMENTS` → `{{args}}`). O bloco vai para `GEMINI.md`, que aceita os mesmos imports `@docs/steering/*.md`; a regra de perguntas passa a citar `ask_user`. As skills do Gemini (`.gemini/skills/`) não são usadas porque só o modelo as ativa, e o fluxo exige invocação explícita (D16).
+- **Antigravity:** só regras (`specs: false`, `skills: ['spec-steering']`). O bloco vem de `instructions/rules.md` e vai para `AGENTS.md`, com os imports convertidos para `@[arquivo](caminho)`, porque no Antigravity `@caminho` só cita o arquivo e não carrega o conteúdo. A skill `spec-steering` vira `.agents/rules/spec-steering.md`, uma regra `trigger: model_decision` (o agente a carrega quando o pedido combina com a descrição), com os trechos que citam comandos e specs trocados por texto neutro. Cada troca falha se o trecho sumir do core, e um teste garante que a regra não cita comandos. Não usa as skills do Antigravity (`.agents/skills/`) porque o Gemini CLI também lê essa pasta e as veria como skills ativadas pelo modelo.
+- Quais agentes instalar: `--agent` (um, lista separada por vírgula ou `all`); sem ele, os já registrados no manifesto e, num projeto novo, `claude`. O `init` sempre soma os agentes já instalados, para os arquivos deles não saírem do catálogo e serem removidos. Detectar o agente pelo projeto (pastas `.claude/`, `.gemini/`) fica para depois.
 - **Futuros (anotados para não fechar portas):**
   - Codex: skills em `.agents/skills/`, instruções em `AGENTS.md`, sem imports `@` (o bloco precisaria citar os caminhos em vez de importá-los); invocação só explícita via `agents/openai.yaml` com `allow_implicit_invocation: false`.
-  - Gemini CLI: lê `.gemini/skills/` e também o alias `.agents/skills/`; pode carregar `AGENTS.md` via `context.fileName`.
   - Dois agentes podem compartilhar a mesma pasta de skills. Nesse caso, o engine trata o mesmo caminho de destino como um único arquivo no manifesto.
 - Adicionar um agente significa criar um arquivo em `adapters/` e registrá-lo em `registry.ts`. Nem `core/` nem o engine mudam.
 
@@ -284,7 +320,7 @@ export interface AgentAdapter {
 
 | Comando | Comportamento |
 | --- | --- |
-| `my-spec-kit init [--type api\|front] [--agent claude\|all] [--dry-run] [--yes] [--force]` | Sem `--type`: pergunta; em modo não interativo, `--type` é obrigatório. Se já houver manifesto, usa o tipo registrado e recusa trocar de tipo. Monta o plano (criar / sem mudança / conflito / já existe), mostra, pede confirmação (`--yes` pula; sem terminal, exige `--yes`) e aplica; grava o manifesto. Sem `--agent`: todos os adapters disponíveis. Agentes ainda sem adapter falham com "ainda não suportado nesta versão". `all` significa todos os adapters disponíveis (hoje, só `claude`). Rodar de novo é seguro (idempotente). |
+| `my-spec-kit init [--type api\|front] [--agent claude\|gemini\|antigravity\|all] [--dry-run] [--yes] [--force]` | Sem `--type`: pergunta; em modo não interativo, `--type` é obrigatório. Se já houver manifesto, usa o tipo registrado e recusa trocar de tipo. Monta o plano (criar / sem mudança / conflito / já existe), mostra, pede confirmação (`--yes` pula; sem terminal, exige `--yes`) e aplica; grava o manifesto. `--agent` aceita um agente, uma lista separada por vírgula ou `all` (todos os adapters); sem ele, os agentes do manifesto ou, num projeto novo, `claude`. Os agentes já instalados são sempre mantidos. Agentes sem adapter falham com "ainda não suportado nesta versão". Rodar de novo é seguro (idempotente). |
 | `my-spec-kit update [--dry-run] [--yes] [--force]` | Exige manifesto e usa o `projectType` registrado nele. Atualiza os arquivos gerenciados que não foram editados; lista os editados como conflito; acrescenta arquivos novos do kit; remove do projeto os arquivos que o kit deixou de ter, **só** se não foram editados. Sementes nunca são alteradas. |
 | `my-spec-kit doctor` | Só lê. Verifica: manifesto válido; versão instalada × versão da CLI; arquivos gerenciados ausentes ou editados; bloco presente no `CLAUDE.md`; placeholders `<completar>` no steering; Status inválidos e numeração duplicada em `specs/`. Código de saída ≠ 0 quando há erro. |
 | `my-spec-kit version` | Mostra a versão da CLI e, se houver manifesto, a versão instalada no projeto. |
@@ -321,7 +357,7 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D4 | Bloco marcado no `CLAUDE.md` | Gerenciar o arquivo inteiro / arquivo separado | O `CLAUDE.md` é do projeto. Um arquivo separado dependeria de o projeto lembrar de importá-lo. |
 | D5 | Steering como semente | Steering gerenciado | O conteúdo é 100% do projeto depois de preenchido. |
 | D6 | `core/` em Markdown fora de `src/` | Conteúdo embutido em strings TS | Revisável, legível no GitHub e editável sem build. |
-| D7 | Só Claude Code na v1, com interface de adapter | Vários adapters já na v1 | Foco na primeira entrega; a interface garante a extensão. |
+| D7 | Só Claude Code na v1, com interface de adapter | Vários adapters já na v1 | Foco na primeira entrega; a interface garante a extensão. (Revista por D16.) |
 | D8 | Spec a partir de texto livre ou de uma issue do repositório, lida com a ferramenta que o agente tiver (CLI do host ou integração); a pasta usa o número da issue e a skill nunca escreve na issue. Commit e push pela skill `/git`, que lê as regras do projeto e só executa após confirmação; abrir PR fica fora | Spec só de texto livre / sem skill de git / regras de commit fixas no kit | A issue costuma ser onde a demanda nasce, e manter o número liga spec e issue sem campo extra. A convenção de commit muda de projeto para projeto, então a skill a lê do arquivo de instruções (ou do histórico) em vez de impor uma. |
 | D9 | Zero dependências de runtime | `commander`, `inquirer` etc. | Escopo pequeno; `npx` mais rápido. |
 | D10 | Hash com normalização LF | Hash binário | Evita falsos "editados" com `core.autocrlf` no Windows. |
@@ -330,3 +366,5 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D13 | Nenhuma referência a projeto, domínio ou tecnologia real no kit | Exemplos tirados de projetos reais | O kit é público e agnóstico; exemplos concretos viram placeholders. |
 | D14 | `/spec-steering` parte do contexto da pessoa (texto ou arquivos) e do código, e pergunta só as lacunas das seções essenciais (as que outras skills usam), com roteiro por seção; seções que podem esperar (ex.: glossário) ficam `_A definir._`, sem cobrar resposta e sem alerta do `doctor`; aceita restringir a um arquivo | Uma skill por arquivo de steering / questionário fixo sempre completo | Um comando só mantém o fluxo simples; o contexto inicial evita perguntas já respondidas, e o roteiro garante que nenhuma seção essencial fique sem pergunta, e adiar o resto deixa o início rápido. |
 | D15 | Perguntas sempre interativas (ferramenta de perguntas do agente), com opções sugeridas, a recomendada primeiro, e campo livre; regra única no bloco de instruções | Perguntas numeradas respondidas por texto / regra repetida em cada skill | Responder escolhendo é mais rápido que digitar o número e a resposta, e a sugestão já traz o que o contexto indica. Uma regra só evita que as skills divirjam. |
+| D16 | Adapter do Gemini CLI: skills viram comandos de projeto (`.gemini/commands/<nome>.toml`, `$ARGUMENTS` → `{{args}}`), bloco no `GEMINI.md` com a regra de perguntas citando `ask_user`; `--agent` aceita lista, o padrão num projeto novo continua `claude` e o `init` mantém os agentes já instalados. A interface troca `skillsDir` por `skillTarget(name, file)`, porque a skill deixa de ser sempre uma pasta | Instalar em `.gemini/skills/` / `--agent` sem padrão instalando todos os agentes / um agente por vez, trocando o anterior | No Gemini CLI, skills são ativadas pelo modelo, sem opção de invocação só explícita; um comando mantém o portão humano de cada fase e a mesma chamada `/spec-new`. Instalar todos por padrão criaria `GEMINI.md` em projetos que não usam Gemini. Trocar de agente removeria os arquivos do anterior, porque saem do catálogo. |
+| D17 | Antigravity só com as regras do projeto: bloco próprio (`core/instructions/rules.md`) em `AGENTS.md`, steering como semente e o roteiro de `spec-steering` como regra `model_decision` em `.agents/rules/`; sem `specs/`, templates nem comandos. A interface ganha `instructionsSource`, `skills`, `specs` e `steeringHint` | Instalar o fluxo de specs também no Antigravity / usar o `GEMINI.md`, como o adapter do Gemini | A pessoa quer usar o Antigravity para que o agente conheça as regras e a estrutura do projeto, e deixar o fluxo de specs para os outros agentes. Um bloco próprio não cita comandos que não existem ali. O Antigravity lê `AGENTS.md` e `GEMINI.md`; usar `AGENTS.md` evita disputar o bloco com o adapter do Gemini, que usa outro conteúdo. |

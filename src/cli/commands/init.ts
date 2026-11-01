@@ -1,9 +1,13 @@
+import { readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import { resolveAgents } from '../../adapters/registry.js';
 import { UserError } from '../../errors.js';
 import { readManifest } from '../../engine/manifest.js';
 import { isProjectType, PROJECT_TYPES, type ProjectType } from '../../engine/types.js';
 import type { CliContext } from '../context.js';
 import { runInstall } from './install.js';
+
+const STEERING_DIR = 'docs/steering';
 
 export interface InitOptions {
   type?: string;
@@ -16,16 +20,33 @@ export interface InitOptions {
 export async function initCommand(options: InitOptions, ctx: CliContext): Promise<number> {
   const manifest = await readManifest(ctx.cwd);
   const projectType = await resolveProjectType(options.type, manifest?.projectType, ctx);
-  const adapters = resolveAgents(options.agent);
+  const adapters = resolveAgents(options.agent, manifest?.agents);
+  // Lido antes de instalar, porque a instalação cria as sementes que faltam.
+  const existingSteering = await listSteering(ctx.cwd);
 
   const { exitCode, applied } = await runInstall(
     { command: 'init', projectType, adapters, manifest, ...options },
     ctx,
   );
   if (applied && !manifest) {
-    ctx.out('Próximo passo: no Claude Code, rode /spec-steering para preencher o steering do projeto.\n');
+    const hints = adapters.map((a) => `no ${a.displayName}, ${a.steeringHint}`).join('; ');
+    ctx.out(
+      existingSteering.length > 0
+        ? `O steering que já existia (${existingSteering.join(', ')}) foi mantido e passa a ser usado pelo agente.` +
+            ` Para o agente revisá-lo e completar só o que faltar: ${hints}.\n`
+        : `Próximo passo: preencha o steering do projeto (${hints}).\n`,
+    );
   }
   return exitCode;
+}
+
+async function listSteering(cwd: string): Promise<string[]> {
+  try {
+    const items = await readdir(join(cwd, STEERING_DIR), { withFileTypes: true });
+    return items.filter((i) => i.isFile() && i.name.endsWith('.md')).map((i) => `${STEERING_DIR}/${i.name}`).sort();
+  } catch {
+    return [];
+  }
 }
 
 async function resolveProjectType(

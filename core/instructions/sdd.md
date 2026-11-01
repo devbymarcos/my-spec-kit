@@ -5,6 +5,8 @@ Contexto global do projeto (steering), carregado junto com este arquivo:
 - Stack, padrões de código e comandos de verificação: @docs/steering/tech.md
 - Estrutura do projeto: @docs/steering/structure.md
 
+O steering pode ter sido escrito antes do kit, com outros títulos ou outra organização: procure cada informação pelo conteúdo, não pelo título da seção. Outros arquivos de `docs/steering/` também são regras do projeto: leia os que tratam da área de cada tarefa.
+
 Funcionalidades seguem o fluxo de specs: `requirements.md` → `design.md` → `tasks.md` → implementação, com aprovação entre cada fase (Status `rascunho` → `aprovado` → `implementado`). As specs ficam versionadas em `specs/NNN-<feature>/`, com modelos em `specs/_templates/`. Este arquivo e o `docs/steering/` funcionam como a constituição do projeto: todo `design.md` deve passar pelo checklist deles.
 - Comandos: `/spec-new` → `/spec-design` → `/spec-tasks` → `/spec-implement` (uma tarefa por vez)
 - Commit e push: `/git` segue as regras de branch e commit deste arquivo (ou do histórico, se não houver) e só executa depois da confirmação

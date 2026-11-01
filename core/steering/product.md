@@ -1,6 +1,6 @@
 # Produto
 
-> Contexto de produto compartilhado por todas as specs. Importado pelo arquivo de instruções do agente.
+> Contexto de produto que vale para todo trabalho no projeto. Importado pelo arquivo de instruções do agente.
 
 ## Visão
 
