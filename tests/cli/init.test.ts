@@ -111,7 +111,7 @@ describe('init', () => {
     expect(await init(['--type', 'front', '--agent', 'antigravity', '--yes'])).toBe(0);
 
     expect(Object.keys(await snapshot()).sort()).toEqual([
-      '.agents/rules/spec-steering.md',
+      '.agents/skills/spec-steering/SKILL.md',
       '.my-spec-kit/manifest.json',
       'AGENTS.md',
       'docs/steering/product.md',
@@ -142,7 +142,7 @@ describe('init', () => {
     const files = Object.keys(await snapshot());
     expect(files).toContain('specs/_templates/design.md');
     expect(files).toContain('.claude/skills/spec-new/SKILL.md');
-    expect(files.filter((p) => p.startsWith('.agents/'))).toEqual(['.agents/rules/spec-steering.md']);
+    expect(files.filter((p) => p.startsWith('.agents/'))).toEqual(['.agents/skills/spec-steering/SKILL.md']);
   });
 
   it('adds an agent without removing the ones already installed', async () => {

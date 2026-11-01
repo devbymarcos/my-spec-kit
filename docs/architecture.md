@@ -2,7 +2,7 @@
 
 - **Status:** aprovada
 - **Data:** 2026-10-23
-- **Escopo da v1:** **Claude Code** e, desde 2026-11-01, **Gemini CLI** (D16) e **Antigravity**, só com as regras do projeto (D17). Outros agentes (Codex e outros) entram pelo mesmo ponto de extensão, os adapters.
+- **Escopo da v1:** **Claude Code** e, desde 2026-11-01, **Gemini CLI** (D16) e **Antigravity**, com as regras do projeto e o planejamento nativo dele (D17). Outros agentes (Codex e outros) entram pelo mesmo ponto de extensão, os adapters.
 
 ## 1. Objetivo e princípios
 
@@ -81,7 +81,7 @@ my-spec-kit/
 │   ├── steering/{product,tech,structure}.md
 │   └── instructions/
 │       ├── sdd.md                     # bloco do fluxo de specs (agentes com skills)
-│       └── rules.md                   # bloco só com as regras do projeto (Antigravity)
+│       └── rules.md                   # bloco de regras + planejamento nativo (Antigravity)
 ├── src/
 │   ├── cli/
 │   │   ├── index.ts                   # entrada do bin
@@ -104,7 +104,7 @@ my-spec-kit/
 │       ├── types.ts                   # interface AgentAdapter
 │       ├── claude.ts
 │       ├── gemini.ts                  # skills → comandos TOML, bloco → GEMINI.md
-│       ├── antigravity.ts             # só regras: AGENTS.md + roteiro do steering
+│       ├── antigravity.ts             # AGENTS.md (rules.md) + skill de steering
 │       ├── text.ts                    # frontmatter e trocas de texto usadas pelos adapters
 │       └── registry.ts                # lista de adapters disponíveis
 ├── tests/
@@ -147,19 +147,19 @@ As pastas de feature (`specs/NNN-*/`) **nunca** são tocadas pela CLI.
 
 **Gemini CLI** (`--agent gemini`): no lugar de `.claude/skills/` e `CLAUDE.md`, instala `.gemini/commands/<skill>.toml` (um comando por skill, gerenciado) e o bloco no `GEMINI.md`. `specs/`, `docs/steering/` e o manifesto são os mesmos; com os dois agentes, eles são instalados uma vez só.
 
-**Antigravity** (`--agent antigravity`): instala só o necessário para o agente conhecer as regras do projeto, sem o fluxo de specs nem comandos:
+**Antigravity** (`--agent antigravity`): instala a estrutura nativa do Antigravity para ele conhecer as regras do projeto (produto, tecnologia, estrutura, padrões), sem o fluxo de specs. O planejamento fica com o ciclo do próprio agente (plano de implementação revisado antes de mudar arquivos, resumo no fim); o bloco diz o que o plano precisa cobrir:
 
 ```
 <projeto>/
 ├── AGENTS.md                          # NÃO gerenciado; recebe o bloco de core/instructions/rules.md
-├── .agents/rules/spec-steering.md     # gerenciado; roteiro de preenchimento do steering
+├── .agents/skills/spec-steering/SKILL.md  # gerenciado; skill que preenche e mantém o steering
 ├── docs/steering/*.md                 # semente, como nos outros agentes
 └── .my-spec-kit/manifest.json
 ```
 
-O próprio Antigravity preenche o steering: a pessoa pede (ex.: "preencha o steering do projeto") e ele carrega o roteiro. `specs/` só é instalado se outro agente com o fluxo de specs também estiver no projeto.
+O próprio Antigravity preenche o steering: a pessoa pede (ex.: "preencha o steering do projeto") e ele ativa a skill pela descrição (no App e na CLI, também por `/spec-steering`). `specs/` só é instalado se outro agente com o fluxo de specs também estiver no projeto.
 
-**Mudar de agente no meio do projeto** (ex.: de Claude para Antigravity): `init --agent antigravity` soma o agente novo e não remove nada do anterior. Steering, specs e `CLAUDE.md` ficam como estão. O bloco do Antigravity manda ler as regras de projeto escritas nos arquivos de instruções de outros agentes e seguir as specs que já existem. Remover um agente do projeto ainda não é suportado.
+**Mudar de agente no meio do projeto** (ex.: de Claude para Antigravity): `init --agent antigravity` soma o agente novo e não remove nada do anterior. Steering, specs e `CLAUDE.md` ficam como estão. O bloco do Antigravity diz que as regras vêm só dele e do steering, e que arquivos de outros agentes (`CLAUDE.md`, `specs/`) não se aplicam. As regras do time que estavam no `CLAUDE.md` precisam ir para o `AGENTS.md`, fora do bloco, ou para o steering. Remover um agente do projeto ainda não é suportado.
 
 ### 5.1 Tipo de projeto
 
@@ -279,7 +279,7 @@ disable-model-invocation: true
 
 Inserido no `CLAUDE.md`: importa o steering (`@docs/steering/*.md`), descreve o fluxo e os comandos e fixa as regras gerais (perguntas interativas com respostas sugeridas, "spec é a fonte da verdade", "regra existente não muda sem critério aprovado", requisitos em EARS, `style.md` se existir). Nada sobre stack ou idioma de código.
 
-`core/instructions/rules.md` é o bloco dos agentes sem o fluxo de specs (hoje, o Antigravity): importa o mesmo steering e fixa as regras de trabalho a partir dele (estrutura de `structure.md`, padrões e comandos de verificação de `tech.md`, checklist e avisos, `style.md` se existir, regra de negócio existente só muda a pedido, steering com `<completar>` é oferecido para preenchimento, perguntas com opções sugeridas). Não cita comandos.
+`core/instructions/rules.md` é o bloco dos agentes sem o fluxo de specs (hoje, o Antigravity): importa o mesmo steering e define como trabalhar: plano revisado antes de mudar (escopo, arquivos por camada, impacto em comportamento existente, testes, checklist de design), só o que foi pedido, comandos de verificação antes de concluir e resumo no fim. Fixa as regras a partir do steering (estrutura, padrões, avisos, `style.md` se existir, regra de negócio existente só muda a pedido, steering com `<completar>` é oferecido para preenchimento, perguntas com opções sugeridas). Não cita comandos nem arquivos de spec.
 
 ## 8. Adapters
 
@@ -309,7 +309,7 @@ export interface AgentAdapter {
 
 - **Claude:** skills em `.claude/skills/<nome>/`, `instructionsFile = CLAUDE.md`; `renderSkill` e `renderInstructions` devolvem o conteúdo sem mudança.
 - **Gemini CLI:** cada skill vira um comando de projeto, `.gemini/commands/<nome>.toml`, com `description` (a do frontmatter + `Uso: /<nome> <argument-hint>`) e `prompt` (o corpo, com `$ARGUMENTS` → `{{args}}`). O bloco vai para `GEMINI.md`, que aceita os mesmos imports `@docs/steering/*.md`; a regra de perguntas passa a citar `ask_user`. As skills do Gemini (`.gemini/skills/`) não são usadas porque só o modelo as ativa, e o fluxo exige invocação explícita (D16).
-- **Antigravity:** só regras (`specs: false`, `skills: ['spec-steering']`). O bloco vem de `instructions/rules.md` e vai para `AGENTS.md`, com os imports convertidos para `@[arquivo](caminho)`, porque no Antigravity `@caminho` só cita o arquivo e não carrega o conteúdo. A skill `spec-steering` vira `.agents/rules/spec-steering.md`, uma regra `trigger: model_decision` (o agente a carrega quando o pedido combina com a descrição), com os trechos que citam comandos e specs trocados por texto neutro. Cada troca falha se o trecho sumir do core, e um teste garante que a regra não cita comandos. Não usa as skills do Antigravity (`.agents/skills/`) porque o Gemini CLI também lê essa pasta e as veria como skills ativadas pelo modelo.
+- **Antigravity:** regras + skill de steering (`specs: false`, `skills: ['spec-steering']`). O bloco vem de `instructions/rules.md` e vai para `AGENTS.md`, com os imports convertidos para `@[arquivo](caminho)`, porque no Antigravity `@caminho` só cita o arquivo e não carrega o conteúdo. A skill `spec-steering` vai para `.agents/skills/spec-steering/SKILL.md`, só com `name` e uma `description` que diz quando usá-la (o agente escolhe a skill por ela), e com os trechos que citam comandos e specs trocados por texto neutro. Cada troca falha se o trecho sumir do core, e um teste garante que a skill não cita comandos. Com `gemini` e `antigravity` no mesmo projeto, o Gemini CLI também vê essa skill (ele lê `.agents/skills/`), além do comando `/spec-steering` dele.
 - Quais agentes instalar: `--agent` (um, lista separada por vírgula ou `all`); sem ele, os já registrados no manifesto e, num projeto novo, `claude`. O `init` sempre soma os agentes já instalados, para os arquivos deles não saírem do catálogo e serem removidos. Detectar o agente pelo projeto (pastas `.claude/`, `.gemini/`) fica para depois.
 - **Futuros (anotados para não fechar portas):**
   - Codex: skills em `.agents/skills/`, instruções em `AGENTS.md`, sem imports `@` (o bloco precisaria citar os caminhos em vez de importá-los); invocação só explícita via `agents/openai.yaml` com `allow_implicit_invocation: false`.
@@ -367,4 +367,4 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D14 | `/spec-steering` parte do contexto da pessoa (texto ou arquivos) e do código, e pergunta só as lacunas das seções essenciais (as que outras skills usam), com roteiro por seção; seções que podem esperar (ex.: glossário) ficam `_A definir._`, sem cobrar resposta e sem alerta do `doctor`; aceita restringir a um arquivo | Uma skill por arquivo de steering / questionário fixo sempre completo | Um comando só mantém o fluxo simples; o contexto inicial evita perguntas já respondidas, e o roteiro garante que nenhuma seção essencial fique sem pergunta, e adiar o resto deixa o início rápido. |
 | D15 | Perguntas sempre interativas (ferramenta de perguntas do agente), com opções sugeridas, a recomendada primeiro, e campo livre; regra única no bloco de instruções | Perguntas numeradas respondidas por texto / regra repetida em cada skill | Responder escolhendo é mais rápido que digitar o número e a resposta, e a sugestão já traz o que o contexto indica. Uma regra só evita que as skills divirjam. |
 | D16 | Adapter do Gemini CLI: skills viram comandos de projeto (`.gemini/commands/<nome>.toml`, `$ARGUMENTS` → `{{args}}`), bloco no `GEMINI.md` com a regra de perguntas citando `ask_user`; `--agent` aceita lista, o padrão num projeto novo continua `claude` e o `init` mantém os agentes já instalados. A interface troca `skillsDir` por `skillTarget(name, file)`, porque a skill deixa de ser sempre uma pasta | Instalar em `.gemini/skills/` / `--agent` sem padrão instalando todos os agentes / um agente por vez, trocando o anterior | No Gemini CLI, skills são ativadas pelo modelo, sem opção de invocação só explícita; um comando mantém o portão humano de cada fase e a mesma chamada `/spec-new`. Instalar todos por padrão criaria `GEMINI.md` em projetos que não usam Gemini. Trocar de agente removeria os arquivos do anterior, porque saem do catálogo. |
-| D17 | Antigravity só com as regras do projeto: bloco próprio (`core/instructions/rules.md`) em `AGENTS.md`, steering como semente e o roteiro de `spec-steering` como regra `model_decision` em `.agents/rules/`; sem `specs/`, templates nem comandos. A interface ganha `instructionsSource`, `skills`, `specs` e `steeringHint` | Instalar o fluxo de specs também no Antigravity / usar o `GEMINI.md`, como o adapter do Gemini | A pessoa quer usar o Antigravity para que o agente conheça as regras e a estrutura do projeto, e deixar o fluxo de specs para os outros agentes. Um bloco próprio não cita comandos que não existem ali. O Antigravity lê `AGENTS.md` e `GEMINI.md`; usar `AGENTS.md` evita disputar o bloco com o adapter do Gemini, que usa outro conteúdo. |
+| D17 | Antigravity só com as regras do projeto: bloco próprio (`core/instructions/rules.md`) em `AGENTS.md`, steering como semente e a skill `spec-steering` em `.agents/skills/`; o planejamento usa o ciclo nativo do agente (plano revisado, resumo), com o bloco dizendo o que o plano cobre; sem `specs/`, templates nem os outros comandos. A interface ganha `instructionsSource`, `skills`, `specs` e `steeringHint` | Instalar o fluxo de specs também no Antigravity / usar o `GEMINI.md`, como o adapter do Gemini | A pessoa quer usar o Antigravity para que o agente conheça as regras e a estrutura do projeto, e deixar o fluxo de specs para os outros agentes. O Antigravity já tem um ciclo de plano e revisão; instalar também o fluxo de specs criaria dois fluxos competindo. Um bloco próprio não cita comandos que não existem ali. O Antigravity lê `AGENTS.md` e `GEMINI.md`; usar `AGENTS.md` evita disputar o bloco com o adapter do Gemini, que usa outro conteúdo. |
