@@ -107,42 +107,17 @@ describe('init', () => {
     expect(output).toContain('no Gemini CLI, rode /spec-steering');
   });
 
-  it('installs only the project rules and the steering for Antigravity', async () => {
-    expect(await init(['--type', 'front', '--agent', 'antigravity', '--yes'])).toBe(0);
-
-    expect(Object.keys(await snapshot()).sort()).toEqual([
-      '.agents/skills/spec-steering/SKILL.md',
-      '.my-spec-kit/manifest.json',
-      'AGENTS.md',
-      'docs/steering/product.md',
-      'docs/steering/structure.md',
-      'docs/steering/tech.md',
-    ]);
-    expect(await read('AGENTS.md')).toContain('@[tech.md](docs/steering/tech.md)');
-    expect((await manifest()).files['AGENTS.md']).toMatchObject({ kind: 'block', source: 'instructions/rules.md' });
-    expect(output).toContain('no Antigravity, peça "preencha o steering do projeto"');
-  });
-
   it('keeps an existing steering, including extra files, and says it will be used', async () => {
     await put('docs/steering/tech.md', '# Tech\n\n## Testes\n`make test`\n');
     await put('docs/steering/api.md', '# Padrões da API\n');
 
-    expect(await init(['--type', 'api', '--agent', 'antigravity', '--yes'])).toBe(0);
+    expect(await init(['--type', 'api', '--yes'])).toBe(0);
 
     expect(await read('docs/steering/tech.md')).toBe('# Tech\n\n## Testes\n`make test`\n');
     expect(await read('docs/steering/api.md')).toBe('# Padrões da API\n');
     expect(output).toMatch(/já existe\s+docs\/steering\/tech\.md/);
     expect(output).toContain('O steering que já existia (docs/steering/api.md, docs/steering/tech.md) foi mantido');
     expect(output).not.toContain('Próximo passo');
-  });
-
-  it('keeps the specs flow when Antigravity is installed next to another agent', async () => {
-    expect(await init(['--type', 'api', '--agent', 'claude,antigravity', '--yes'])).toBe(0);
-
-    const files = Object.keys(await snapshot());
-    expect(files).toContain('specs/_templates/design.md');
-    expect(files).toContain('.claude/skills/spec-new/SKILL.md');
-    expect(files.filter((p) => p.startsWith('.agents/'))).toEqual(['.agents/skills/spec-steering/SKILL.md']);
   });
 
   it('adds an agent without removing the ones already installed', async () => {

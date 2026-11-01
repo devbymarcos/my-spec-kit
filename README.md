@@ -7,7 +7,7 @@ Kit de **Spec-Driven Development** para agentes de IA. Instala num projeto exist
 - skills para o agente conduzir cada fase (`/spec-steering`, `/spec-new`, `/spec-design`, `/spec-tasks`, `/spec-implement`), fazer commit e push nas regras do projeto (`/git`) e, em projetos front, definir padrões visuais quando quiser (`/spec-style`);
 - esqueletos de steering (produto, stack, estrutura e comandos de verificação) para o projeto preencher.
 
-> **Estado:** v0.1.0, em desenvolvimento. `init`, `update` e `version` funcionam; `doctor` ainda não. Agentes suportados: **Claude Code**, **Gemini CLI** e **Antigravity** (regras do projeto, sem o fluxo de specs).
+> **Estado:** v0.1.0, em desenvolvimento. `init`, `update` e `version` funcionam; `doctor` ainda não. Agentes suportados: **Claude Code** e **Gemini CLI**.
 
 ## Instalar num projeto
 
@@ -23,22 +23,6 @@ Por padrão o kit é instalado para o Claude Code. Para outro agente, use `--age
 npx github:devbymarcos/my-spec-kit init --type api --agent gemini          # só Gemini CLI
 npx github:devbymarcos/my-spec-kit init --type api --agent claude,gemini   # os dois (ou --agent all)
 ```
-
-### Antigravity: regras do projeto + planejamento do próprio agente
-
-```bash
-npx github:devbymarcos/my-spec-kit init --type api --agent antigravity
-```
-
-No Antigravity o kit monta a estrutura que ele usa para conhecer o projeto (produto, tecnologia, estrutura, padrões), sem o fluxo de specs. O planejamento fica com o ciclo do próprio Antigravity: ele propõe um plano de implementação, você revisa e só então ele muda os arquivos. O kit diz o que esse plano precisa cobrir. Arquivos instalados:
-
-- `AGENTS.md`: bloco com como trabalhar (plano antes de mudar, só o que foi pedido, verificação antes de concluir) e as regras do projeto, com o steering importado em toda conversa;
-- `docs/steering/`: os esqueletos de produto, stack e estrutura;
-- `.agents/skills/spec-steering/SKILL.md`: a skill que o Antigravity usa para preencher e manter o steering.
-
-Depois, no Antigravity, peça "preencha o steering do projeto" (pode passar contexto ou caminhos de arquivos). Ele lê o código, pergunta o que faltar e preenche `docs/steering/`. A partir daí, segue essas regras em todo pedido.
-
-Para nada mudar sem sua aprovação, use o modo de planejamento (ou `/plan`) com a política de revisão do plano em **Request Review**. Se o projeto tinha regras do time no `CLAUDE.md` (branch, commit), copie-as para o `AGENTS.md`, fora do bloco do kit: o Antigravity não lê o `CLAUDE.md`.
 
 Rodar o `init` de novo com outro `--agent` acrescenta esse agente sem remover os que já estão instalados. Specs, templates e steering são os mesmos para todos os agentes.
 

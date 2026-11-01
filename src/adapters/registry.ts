@@ -1,16 +1,15 @@
 import { UserError } from '../errors.js';
-import { antigravityAdapter } from './antigravity.js';
 import { claudeAdapter } from './claude.js';
 import { geminiAdapter } from './gemini.js';
 import type { AgentAdapter } from './types.js';
 
-export const ADAPTERS: readonly AgentAdapter[] = [claudeAdapter, geminiAdapter, antigravityAdapter];
+export const ADAPTERS: readonly AgentAdapter[] = [claudeAdapter, geminiAdapter];
 
 /** Agente instalado quando o projeto ainda não tem kit e `--agent` não foi informado. */
 export const DEFAULT_AGENT = claudeAdapter.id;
 
 /**
- * Resolve o valor de `--agent` (`claude`, `gemini`, `antigravity`, lista separada por vírgula ou `all`).
+ * Resolve o valor de `--agent` (`claude`, `gemini`, lista separada por vírgula ou `all`).
  * Os agentes já instalados são mantidos: sem isso, os arquivos deles sairiam do catálogo e seriam removidos.
  */
 export function resolveAgents(value: string | undefined, installed: readonly string[] = []): AgentAdapter[] {
