@@ -14,6 +14,7 @@ Funcionalidades seguem o fluxo de specs: `requirements.md` → `design.md` → `
 - Padrões visuais (opcional, só em front): se existir `docs/steering/style.md`, siga-o em qualquer mudança visual.
 - Guia: `specs/README.md`
 - Requisitos sempre em EARS. Dúvidas de regra de negócio são perguntadas, nunca assumidas.
+- **Aprovações são interativas.** Toda aprovação de transição de fase (`requirements` → `design` → `tasks` → `implement`) ou de conclusão de tarefa individual deve ser solicitada com a ferramenta de perguntas do agente, oferecendo a opção recomendada de aprovar e seguir automaticamente para a próxima etapa (ex.: `(Recomendado) Aprovar e avançar para /spec-design`). Quando a pessoa escolher a opção de aprovação, altere o Status do arquivo para `aprovado` (ou marque a tarefa concluída em `tasks.md`) e execute a etapa seguinte imediatamente, sem exigir confirmação extra por texto.
 - **Perguntas são interativas.** Sempre que precisar perguntar algo à pessoa, use a ferramenta de perguntas do agente (no Claude Code, `AskUserQuestion`), em vez de uma lista numerada para ela responder por texto:
   - até 4 perguntas por vez, cada uma com um título curto e de 2 a 4 opções de resposta;
   - as opções são sugestões concretas, tiradas do contexto, do código ou de práticas usuais, cada uma com uma descrição curta do que implica; a recomendada vem primeiro, com "(Recomendado)" no rótulo;

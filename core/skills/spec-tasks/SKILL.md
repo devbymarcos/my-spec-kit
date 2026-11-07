@@ -15,4 +15,8 @@ Crie o plano de **tarefas** da spec indicada: $ARGUMENTS
    - todo critério de aceite e toda regra preservada precisa ser coberto por ao menos uma tarefa — registre isso na seção **Cobertura**;
    - última tarefa é sempre a verificação final.
 3. Mantenha **Status: rascunho**. Não escreva código.
-4. Termine listando as tarefas e pedindo aprovação antes de `/spec-implement`.
+4. Termine listando as tarefas e solicite a aprovação com a ferramenta de perguntas interativas do agente:
+   - `(Recomendado) Aprovar tarefas e iniciar implementação (/spec-implement)`
+   - `Apenas aprovar (sem avançar)`
+   - `Solicitar ajustes nas tarefas`
+   Se a pessoa escolher aprovar e iniciar: atualize o Status para `aprovado` em `tasks.md` e execute `/spec-implement` na primeira tarefa imediatamente. Se escolher apenas aprovar: atualize o Status para `aprovado`. Se pedir ajustes: aplique-os e repita a pergunta.

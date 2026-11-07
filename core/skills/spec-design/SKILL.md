@@ -13,4 +13,8 @@ Crie a fase de **design técnico** da spec indicada: $ARGUMENTS
 4. Se o design só funcionar mudando uma regra preservada que não está autorizada nos requisitos, pare e pergunte (pergunta interativa, com as alternativas de design como opções). O mesmo vale para qualquer decisão em que haja mais de uma alternativa razoável.
 5. Respeite os avisos ativos do projeto (`docs/steering/tech.md` › Avisos ativos e o arquivo de instruções do projeto).
 6. Mantenha **Status: rascunho**. Não escreva código nem `tasks.md`.
-7. Termine resumindo as decisões principais e pedindo aprovação antes de `/spec-tasks`.
+7. Termine resumindo as decisões principais e solicite a aprovação com a ferramenta de perguntas interativas do agente:
+   - `(Recomendado) Aprovar design e avançar para /spec-tasks`
+   - `Apenas aprovar (sem avançar)`
+   - `Solicitar ajustes no design`
+   Se a pessoa escolher aprovar e avançar: atualize o Status para `aprovado` em `design.md` e inicie `/spec-tasks` imediatamente. Se escolher apenas aprovar: atualize o Status para `aprovado`. Se pedir ajustes: aplique-os e repita a pergunta.
