@@ -260,4 +260,45 @@ describe('init', () => {
     expect(await init(['--type', 'api', '--yes'])).toBe(1);
     expect(output).toContain('manifest.json está inválido');
   });
+
+  it('installs the kit for Antigravity in .agents/skills/ and AGENTS.md', async () => {
+    expect(await init(['--type', 'api', '--agent', 'antigravity', '--yes'])).toBe(0);
+
+    const files = Object.keys(await snapshot());
+    expect(files).toContain('.agents/skills/spec-new/SKILL.md');
+    expect(files).not.toContain('.agents/skills/spec-style/SKILL.md');
+    expect(files.some((p) => p.startsWith('.claude/') || p === 'CLAUDE.md')).toBe(false);
+    expect(await read('AGENTS.md')).toContain('@[tech.md](docs/steering/tech.md)');
+    expect(await read('AGENTS.md')).toContain('`ask_question`');
+    expect((await manifest()).agents).toEqual(['antigravity']);
+    expect(output).toContain('no Antigravity, rode /spec-steering');
+  });
+
+  it('allows switching from claude to antigravity keeping both by default', async () => {
+    await init(['--type', 'api', '--agent', 'claude', '--yes']);
+
+    output = '';
+    expect(await init(['--agent', 'antigravity', '--yes'])).toBe(0);
+
+    const files = Object.keys(await snapshot());
+    expect(files).toContain('.claude/skills/spec-new/SKILL.md');
+    expect(files).toContain('.agents/skills/spec-new/SKILL.md');
+    expect(files).toContain('CLAUDE.md');
+    expect(files).toContain('AGENTS.md');
+    expect((await manifest()).agents).toEqual(['claude', 'antigravity']);
+    expect(output).toContain('Novo(s) agente(s) configurado(s): no Antigravity, rode /spec-steering');
+  });
+
+  it('allows replacing claude with antigravity using --replace-agents', async () => {
+    await init(['--type', 'api', '--agent', 'claude', '--yes']);
+
+    output = '';
+    expect(await init(['--agent', 'antigravity', '--replace-agents', '--yes'])).toBe(0);
+
+    const files = Object.keys(await snapshot());
+    expect(files).not.toContain('.claude/skills/spec-new/SKILL.md');
+    expect(files).toContain('.agents/skills/spec-new/SKILL.md');
+    expect(files).toContain('AGENTS.md');
+    expect((await manifest()).agents).toEqual(['antigravity']);
+  });
 });

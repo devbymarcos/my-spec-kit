@@ -8,18 +8,19 @@ import { defaultContext, type CliContext } from './context.js';
 const HELP = `my-spec-kit ${KIT_VERSION}
 
 Uso:
-  my-spec-kit init [--type api|front] [--agent claude|gemini|all] [--dry-run] [--yes] [--force]
+  my-spec-kit init [--type api|front] [--agent claude|gemini|antigravity|all] [--replace-agents] [--dry-run] [--yes] [--force]
   my-spec-kit update [--dry-run] [--yes] [--force]
   my-spec-kit doctor
   my-spec-kit version
 
 Opções:
-  --type      tipo de projeto: api ou front (pergunta se não for informado)
-  --agent     agente de IA: claude, gemini, lista separada por vírgula ou all
-              (padrão: os já instalados; num projeto novo, claude)
-  --dry-run   mostra o que seria feito, sem alterar nada
-  --yes       aplica sem pedir confirmação
-  --force     sobrescreve arquivos em conflito, guardando cópia em .my-spec-kit/backup/
+  --type            tipo de projeto: api ou front (pergunta se não for informado)
+  --agent           agente de IA: claude, gemini, antigravity, lista separada por vírgula ou all
+                    (padrão: os já instalados; num projeto novo, claude)
+  --replace-agents  substitui os agentes instalados em vez de somar aos existentes
+  --dry-run         mostra o que seria feito, sem alterar nada
+  --yes             aplica sem pedir confirmação
+  --force           sobrescreve arquivos em conflito, guardando cópia em .my-spec-kit/backup/
 `;
 
 /** Executa a CLI e devolve o código de saída. */
@@ -34,6 +35,7 @@ export async function run(argv: string[], overrides: Partial<CliContext> = {}): 
         help: { type: 'boolean', short: 'h' },
         type: { type: 'string' },
         agent: { type: 'string' },
+        'replace-agents': { type: 'boolean', default: false },
         'dry-run': { type: 'boolean', default: false },
         yes: { type: 'boolean', short: 'y', default: false },
         force: { type: 'boolean', default: false },
@@ -55,6 +57,7 @@ export async function run(argv: string[], overrides: Partial<CliContext> = {}): 
           {
             type: values.type,
             agent: values.agent,
+            replaceAgents: values['replace-agents'],
             dryRun: values['dry-run'],
             yes: values.yes,
             force: values.force,

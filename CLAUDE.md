@@ -9,7 +9,7 @@ As pendências ficam nas **issues do GitHub** (`devbymarcos/my-spec-kit`). Ao re
 ## Regras do kit
 
 - **Agnóstico.** Nada versionado pode citar projetos, empresas, domínios ou tecnologias de projetos reais, nem produtos de terceiros como origem da metodologia. Exemplos em skills e templates são placeholders ou cobrem vários ecossistemas.
-- **Agentes: Claude Code, Gemini CLI e Codex.** Cada um é um adapter (`docs/architecture.md` › 8). O `core/` é escrito no formato do Claude Code; os outros adapters convertem. O Codex ainda não tem adapter. Não implemente adapters de outros agentes sem pedido.
+- **Agentes: Claude Code, Gemini CLI, Antigravity e Codex.** Cada um é um adapter (`docs/architecture.md` › 8). O `core/` é escrito no formato do Claude Code; os outros adapters convertem. O Codex ainda não tem adapter. Não implemente adapters de outros agentes sem pedido.
 - **O conteúdo é o produto.** Skills, templates e steering ficam em `core/`, em Markdown. As skills são iguais para todo projeto; o que varia por projeto é lido do steering (`docs/steering/` do projeto de destino), nunca escrito na skill.
 - **Tipos de projeto:** `api` e `front`. Só `requirements.md` e `design.md` mudam por tipo (`core/specs/_templates/api|front/`); `spec-style` só é instalada em front.
 - **A CLI nunca toca no que não é do kit.** Só arquivos do manifesto ou o bloco marcado no `CLAUDE.md` do projeto de destino. Personalização nunca é sobrescrita sem `--force`.

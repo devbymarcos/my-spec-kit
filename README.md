@@ -7,7 +7,7 @@ Kit de **Spec-Driven Development** para agentes de IA. Instala num projeto exist
 - skills para o agente conduzir cada fase (`/spec-steering`, `/spec-new`, `/spec-design`, `/spec-tasks`, `/spec-implement`), fazer commit e push nas regras do projeto (`/git`) e, em projetos front, definir padrões visuais quando quiser (`/spec-style`);
 - esqueletos de steering (produto, stack, estrutura e comandos de verificação) para o projeto preencher.
 
-> **Estado:** v0.1.0, em desenvolvimento. `init`, `update` e `version` funcionam; `doctor` ainda não. Agentes suportados: **Claude Code** e **Gemini CLI**.
+> **Estado:** v0.1.0, em desenvolvimento. `init`, `update` e `version` funcionam; `doctor` ainda não. Agentes suportados: **Claude Code**, **Gemini CLI** e **Antigravity**.
 
 ## Instalar num projeto
 
@@ -20,28 +20,41 @@ npx github:devbymarcos/my-spec-kit init --type api     # ou --type front
 Por padrão o kit é instalado para o Claude Code. Para outro agente, use `--agent`:
 
 ```bash
-npx github:devbymarcos/my-spec-kit init --type api --agent gemini          # só Gemini CLI
-npx github:devbymarcos/my-spec-kit init --type api --agent claude,gemini   # os dois (ou --agent all)
+npx github:devbymarcos/my-spec-kit init --type api --agent antigravity       # só Antigravity (AGENTS.md + .agents/skills/)
+npx github:devbymarcos/my-spec-kit init --type api --agent gemini            # só Gemini CLI
+npx github:devbymarcos/my-spec-kit init --type api --agent claude,antigravity # múltiplos agentes (ou --agent all)
 ```
 
-Rodar o `init` de novo com outro `--agent` acrescenta esse agente sem remover os que já estão instalados. Specs, templates e steering são os mesmos para todos os agentes.
+### Mudar de agente num projeto em andamento
+
+Se o projeto já estiver usando Claude Code (ou outro agente) e você quiser passar a usar com Antigravity:
+
+```bash
+# Mantém o Claude e adiciona Antigravity:
+npx github:devbymarcos/my-spec-kit init --agent antigravity
+
+# Ou substitui completamente o Claude pelo Antigravity:
+npx github:devbymarcos/my-spec-kit init --agent antigravity --replace-agents
+```
+
+Rodar o `init` com outro `--agent` acrescenta esse agente sem remover os que já estão instalados. Com `--replace-agents`, o kit substitui os agentes anteriores, removendo com segurança as skills do agente antigo e instalando as do novo. Specs, templates e steering nunca são perdidos: são os mesmos para todos os agentes.
 
 O `init` mostra o plano antes de aplicar e pede confirmação. Ele:
 
-- cria as skills em `.claude/skills/` (no Gemini CLI, como comandos em `.gemini/commands/`), os templates em `specs/_templates/` e o steering em `docs/steering/`;
-- acrescenta um bloco marcado ao fim do `CLAUDE.md` (no Gemini CLI, do `GEMINI.md`), sem mexer no resto do arquivo;
+- cria as skills em `.claude/skills/` (no Antigravity em `.agents/skills/`; no Gemini CLI, como comandos em `.gemini/commands/`), os templates em `specs/_templates/` e o steering em `docs/steering/`;
+- acrescenta um bloco marcado ao fim do `CLAUDE.md` (no Antigravity do `AGENTS.md`; no Gemini CLI do `GEMINI.md`), sem mexer no resto do arquivo;
 - **nunca sobrescreve** um arquivo que já existe e é diferente: ele aparece como conflito. Para sobrescrever, use `--force`, que guarda uma cópia em `.my-spec-kit/backup/`;
 - registra o que instalou em `.my-spec-kit/manifest.json`.
 
 Opções: `--dry-run` mostra o plano sem alterar nada; `--yes` aplica sem perguntar.
 
-Depois, no agente (os comandos são os mesmos no Claude Code e no Gemini CLI):
+Depois, no agente (os comandos são os mesmos no Claude Code, Antigravity e Gemini CLI):
 
 1. `/spec-steering [contexto]`: preenche o steering a partir do contexto que você passar (texto livre ou caminhos de arquivos), do código, se o projeto existir, e de perguntas sobre o que faltar. Use `/spec-steering tech` (ou `product`, `structure`) para trabalhar num arquivo só.
 2. `/spec-new` → `/spec-design` → `/spec-tasks` → `/spec-implement`, aprovando cada fase. A spec pode começar de duas formas:
    - de texto livre: `/spec-new <feature> <descrição>`, numerada em sequência;
    - de uma issue do repositório remoto: `/spec-new #42 [feature]` (ou o link da issue). A pasta fica `specs/042-<feature>/`, e a issue só é lida, nunca alterada.
-3. `/git [instrução]`: faz o commit e o push seguindo as regras de branch e commit do `CLAUDE.md` ou do `GEMINI.md` (ou o padrão do histórico). Mostra branch, arquivos e mensagem e só executa depois que você confirma.
+3. `/git [instrução]`: faz o commit e o push seguindo as regras de branch e commit do `CLAUDE.md`, `AGENTS.md` ou `GEMINI.md` (ou o padrão do histórico). Mostra branch, arquivos e mensagem e só executa depois que você confirma.
 
 ## Atualização
 
@@ -55,7 +68,7 @@ O `update` usa o tipo e os agentes registrados no manifesto e mostra o plano ant
 
 - atualiza os arquivos do kit que você não editou e cria os que são novos;
 - remove os que saíram do kit, se você não os editou;
-- muda só o conteúdo entre os marcadores do bloco no `CLAUDE.md`/`GEMINI.md`;
+- muda só o conteúdo entre os marcadores do bloco no `CLAUDE.md`/`AGENTS.md`/`GEMINI.md`;
 - **nunca toca** no steering (`docs/steering/`) nem nas specs;
 - lista como conflito os arquivos que você editou e os mantém como estão. Para sobrescrever, use `--force`, que guarda uma cópia em `.my-spec-kit/backup/`.
 
