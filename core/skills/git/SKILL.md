@@ -16,10 +16,10 @@ Entrada: $ARGUMENTS
 
    Se nada definir a convenção, pergunte qual usar (pergunta interativa, com Conventional Commits como opção recomendada e o padrão observado no histórico como alternativa).
 2. **Leia o estado do repositório:** branch atual, upstream, `git status`, as mudanças preparadas e as não preparadas (`git diff --staged` e `git diff`). Se não houver mudanças, diga isso e pare.
-3. **Branch.** Se a regra do projeto não permite commit na branch atual (ex.: branch principal), proponha o nome de uma branch nova conforme a regra e só crie depois da confirmação.
+3. **Branch.** Nunca faça commit na branch principal (ex.: `main`, `master`), a menos que o arquivo de instruções permita explicitamente; o mesmo vale para outra branch que a regra do projeto proíba. Nesse caso, proponha o nome de uma branch nova conforme a regra (ou a partir da spec ou da mudança) e só crie depois da confirmação; as mudanças vão junto para ela.
 4. **Confira antes do commit:**
    - arquivos que não devem ir para o repositório (segredos, chaves, `.env`, credenciais, artefatos de build, arquivos grandes ou temporários): não inclua e avise;
-   - verificações que o arquivo de instruções exige antes do commit; se ele não disser nada, rode os comandos de `docs/steering/tech.md` › Comandos de verificação, se estiverem preenchidos. Se algo falhar, mostre a falha e pergunte se corrige antes ou cancela. Nunca pule hooks (`--no-verify`).
+   - **não rode testes, build nem lint**: o commit e o push só salvam o trabalho em andamento. A verificação roda ao fim da feature, na tarefa de verificação final do `tasks.md`. Nunca pule hooks (`--no-verify`); se um hook rodar verificações, deixe-o rodar.
 5. **Agrupe.** Se as mudanças tratam de assuntos diferentes, proponha dividi-las em commits separados, um por assunto, listando os arquivos de cada um.
 6. **Escreva a mensagem** de cada commit na convenção do projeto, descrevendo o porquê da mudança e não só o que mudou. Se as mudanças pertencem a uma spec em `specs/` cujo cabeçalho tem **Issue**, referencie a issue do jeito que a convenção do projeto pede. Use a instrução da entrada, se houver.
 7. **Confirme** com uma pergunta interativa (regra do arquivo de instruções), mostrando a branch, os arquivos e a mensagem de cada commit. Opções: "Commit e push (Recomendado)", "Só commit" e "Cancelar". A mensagem pode ser ajustada no campo livre. Se a entrada pediu "só commit" ou "sem push", não ofereça o push.

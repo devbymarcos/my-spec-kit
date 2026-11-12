@@ -10,6 +10,8 @@ O steering pode ter sido escrito antes do kit, com outros títulos ou outra orga
 Funcionalidades seguem o fluxo de specs: `requirements.md` → `design.md` → `tasks.md` → implementação, com aprovação entre cada fase (Status `rascunho` → `aprovado` → `implementado`). As specs ficam versionadas em `specs/NNN-<feature>/`, com modelos em `specs/_templates/`. Este arquivo e o `docs/steering/` funcionam como a constituição do projeto: todo `design.md` deve passar pelo checklist deles.
 - Comandos: `/spec-new` → `/spec-design` → `/spec-tasks` → `/spec-implement` (uma tarefa por vez)
 - Commit e push: `/git` segue as regras de branch e commit deste arquivo (ou do histórico, se não houver) e só executa depois da confirmação
+- **Nunca faça commit na branch principal** (ex.: `main`, `master`). Se estiver nela, crie antes uma branch para a feature (com autorização). Só faça commit na principal se este arquivo permitir explicitamente.
+- **Commit e push só salvam o trabalho:** não rode testes, build nem lint antes de cada commit ou push durante o desenvolvimento. Os comandos de verificação rodam ao fim da feature, na tarefa de verificação final do `tasks.md` (antes do PR). Hooks do repositório continuam valendo.
 - Steering: `/spec-steering [product|tech|structure] [contexto]` cria ou atualiza `docs/steering/` a partir do contexto dado, do código e de perguntas sobre o que faltar
 - Padrões visuais (opcional, só em front): se existir `docs/steering/style.md`, siga-o em qualquer mudança visual.
 - Guia: `specs/README.md`
