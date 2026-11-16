@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { resolveAgents } from '../../adapters/registry.js';
 import { UserError } from '../../errors.js';
 import { readManifest } from '../../engine/manifest.js';
-import { isProjectType, PROJECT_TYPES, type ProjectType } from '../../engine/types.js';
+import { describeProjectTypes, isProjectType, PROJECT_TYPES, type ProjectType } from '../../engine/types.js';
 import type { CliContext } from '../context.js';
 import { runInstall } from './install.js';
 
@@ -63,7 +63,7 @@ async function resolveProjectType(
   installed: ProjectType | undefined,
   ctx: CliContext,
 ): Promise<ProjectType> {
-  const valid = PROJECT_TYPES.join(' ou ');
+  const valid = describeProjectTypes();
 
   if (option !== undefined) {
     if (!isProjectType(option)) throw new UserError(`Tipo de projeto inválido: "${option}". Use ${valid}.`);

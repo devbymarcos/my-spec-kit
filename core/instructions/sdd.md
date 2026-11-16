@@ -13,7 +13,7 @@ Funcionalidades seguem o fluxo de specs: `requirements.md` → `design.md` → `
 - **Nunca faça commit na branch principal** (ex.: `main`, `master`). Se estiver nela, crie antes uma branch para a feature (com autorização). Só faça commit na principal se este arquivo permitir explicitamente.
 - **Commit e push só salvam o trabalho:** não rode testes, build nem lint antes de cada commit ou push durante o desenvolvimento. Os comandos de verificação rodam ao fim da feature, na tarefa de verificação final do `tasks.md` (antes do PR). Hooks do repositório continuam valendo.
 - Steering: `/spec-steering [product|tech|structure] [contexto]` cria ou atualiza `docs/steering/` a partir do contexto dado, do código e de perguntas sobre o que faltar
-- Padrões visuais (opcional, só em front): se existir `docs/steering/style.md`, siga-o em qualquer mudança visual.
+- Padrões visuais (opcional, só em front e fullstack): se existir `docs/steering/style.md`, siga-o em qualquer mudança visual.
 - Guia: `specs/README.md`
 - Requisitos sempre em EARS. Dúvidas de regra de negócio são perguntadas, nunca assumidas.
 - **Aprovações são interativas.** Toda aprovação de transição de fase (`requirements` → `design` → `tasks` → `implement`) ou de conclusão de tarefa individual deve ser solicitada com a ferramenta de perguntas do agente, oferecendo a opção recomendada de aprovar e seguir automaticamente para a próxima etapa (ex.: `(Recomendado) Aprovar e avançar para /spec-design`). Quando a pessoa escolher a opção de aprovação, altere o Status do arquivo para `aprovado` (ou marque a tarefa concluída em `tasks.md`) e execute a etapa seguinte imediatamente, sem exigir confirmação extra por texto.

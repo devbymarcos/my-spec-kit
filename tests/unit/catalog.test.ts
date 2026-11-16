@@ -22,6 +22,17 @@ describe('buildCatalog', () => {
     expect(byTarget(catalog, 'specs/_templates/design.md').source).toBe('specs/_templates/front/design.md');
   });
 
+  it('installs the fullstack templates and spec-style for fullstack projects', async () => {
+    const catalog = await buildCatalog(CORE_DIR, 'fullstack', [claudeAdapter]);
+
+    expect(byTarget(catalog, '.claude/skills/spec-style/SKILL.md').kind).toBe('managed');
+    expect(byTarget(catalog, 'specs/_templates/design.md').source).toBe('specs/_templates/fullstack/design.md');
+    expect(byTarget(catalog, 'specs/_templates/requirements.md').source).toBe(
+      'specs/_templates/fullstack/requirements.md',
+    );
+    expect(byTarget(catalog, 'specs/_templates/tasks.md').source).toBe('specs/_templates/tasks.md');
+  });
+
   it('marks steering as seed and the instructions file as block', async () => {
     const catalog = await buildCatalog(CORE_DIR, 'api', [claudeAdapter]);
 
@@ -30,10 +41,10 @@ describe('buildCatalog', () => {
     expect(catalog.some((e) => e.target.startsWith('docs/steering/style'))).toBe(false);
   });
 
-  it('never targets a type subfolder of the templates', async () => {
-    const catalog = await buildCatalog(CORE_DIR, 'front', [claudeAdapter]);
+  it.each(['front', 'fullstack'] as const)('never targets a type subfolder of the templates (%s)', async (type) => {
+    const catalog = await buildCatalog(CORE_DIR, type, [claudeAdapter]);
 
-    expect(catalog.filter((e) => /specs\/_templates\/(api|front)\//.test(e.target))).toEqual([]);
+    expect(catalog.filter((e) => /specs\/_templates\/(api|front|fullstack)\//.test(e.target))).toEqual([]);
   });
 });
 

@@ -17,7 +17,7 @@ Para aprovar uma fase, mude o **Status** do arquivo para `aprovado` (ou peça ao
 
 Antes da primeira spec, preencha o steering com `/spec-steering [contexto]`: ele parte do contexto que você passar (texto livre ou caminhos de arquivos), lê o código, se o projeto já existir, e pergunta só o que faltar.
 
-Em projetos front, os padrões visuais (cores, tipografia, modo escuro…) são opcionais. Quando quiser defini-los, use `/spec-style`, que cria `docs/steering/style.md`. Se o arquivo existir, design e implementação passam a segui-lo.
+Em projetos front e fullstack, os padrões visuais (cores, tipografia, modo escuro…) são opcionais. Quando quiser defini-los, use `/spec-style`, que cria `docs/steering/style.md`. Se o arquivo existir, design e implementação passam a segui-lo.
 
 ## Estrutura
 

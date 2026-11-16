@@ -4,7 +4,7 @@
 
 ## Tipo de projeto
 
-<completar: api ou front>
+<completar: api, front ou fullstack>
 
 ## Stack
 

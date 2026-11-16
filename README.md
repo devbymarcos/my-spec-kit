@@ -3,8 +3,8 @@
 Kit de **Spec-Driven Development** para agentes de IA. Instala num projeto existente, de qualquer linguagem:
 
 - o fluxo de specs `requirements.md` → `design.md` → `tasks.md` → implementação, com aprovação humana entre as fases;
-- templates com requisitos em EARS, comportamento existente preservado e rastreabilidade até as tarefas, em duas versões: **api** e **front**;
-- skills para o agente conduzir cada fase (`/spec-steering`, `/spec-new`, `/spec-design`, `/spec-tasks`, `/spec-implement`), fazer commit e push nas regras do projeto (`/git`) e, em projetos front, definir padrões visuais quando quiser (`/spec-style`);
+- templates com requisitos em EARS, comportamento existente preservado e rastreabilidade até as tarefas, em três versões: **api**, **front** e **fullstack** (monolito com telas e API);
+- skills para o agente conduzir cada fase (`/spec-steering`, `/spec-new`, `/spec-design`, `/spec-tasks`, `/spec-implement`), fazer commit e push nas regras do projeto (`/git`) e, em projetos front e fullstack, definir padrões visuais quando quiser (`/spec-style`);
 - esqueletos de steering (produto, stack, estrutura e comandos de verificação) para o projeto preencher.
 
 > **Estado:** v0.1.0, em desenvolvimento. `init`, `update` e `version` funcionam; `doctor` ainda não. Agentes suportados: **Claude Code**, **Gemini CLI** e **Antigravity**.
@@ -14,7 +14,7 @@ Kit de **Spec-Driven Development** para agentes de IA. Instala num projeto exist
 Na pasta do projeto:
 
 ```bash
-npx github:devbymarcos/my-spec-kit init --type api     # ou --type front
+npx github:devbymarcos/my-spec-kit init --type api     # ou --type front, ou --type fullstack
 ```
 
 Por padrão o kit é instalado para o Claude Code. Para outro agente, use `--agent`:

@@ -8,13 +8,13 @@ import { defaultContext, type CliContext } from './context.js';
 const HELP = `my-spec-kit ${KIT_VERSION}
 
 Uso:
-  my-spec-kit init [--type api|front] [--agent claude|gemini|antigravity|all] [--replace-agents] [--dry-run] [--yes] [--force]
+  my-spec-kit init [--type api|front|fullstack] [--agent claude|gemini|antigravity|all] [--replace-agents] [--dry-run] [--yes] [--force]
   my-spec-kit update [--dry-run] [--yes] [--force]
   my-spec-kit doctor
   my-spec-kit version
 
 Opções:
-  --type            tipo de projeto: api ou front (pergunta se não for informado)
+  --type            tipo de projeto: api, front ou fullstack (pergunta se não for informado)
   --agent           agente de IA: claude, gemini, antigravity, lista separada por vírgula ou all
                     (padrão: os já instalados; num projeto novo, claude)
   --replace-agents  substitui os agentes instalados em vez de somar aos existentes

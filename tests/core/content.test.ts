@@ -82,7 +82,7 @@ describe('core content', () => {
     ],
   };
 
-  describe.each(['api', 'front'])('%s templates', (type) => {
+  describe.each(['api', 'front', 'fullstack'])('%s templates', (type) => {
     it.each(Object.entries(REQUIRED_SECTIONS))('%s keeps the methodology sections', (file, sections) => {
       const content = readFileSync(join(coreDir, 'specs', '_templates', type, file), 'utf8');
       for (const section of sections) {

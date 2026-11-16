@@ -50,7 +50,7 @@ O `my-spec-kit` instala uma metodologia de Spec-Driven Development em qualquer p
 | 4. Implementação | código + `[x]` em `tasks.md` | `/spec-implement <feature> [nº]`, uma tarefa por vez |
 | Commit e push | commits na convenção do projeto | `/git [instrução]` |
 | Revisão | Status `implementado` | Tarefa "Verificação final" do `tasks.md` + revisão humana do PR |
-| (opcional, front) Padrões visuais | `docs/steering/style.md` | `/spec-style [o que definir]` |
+| (opcional, front e fullstack) Padrões visuais | `docs/steering/style.md` | `/spec-style [o que definir]` |
 
 - Status `rascunho` → `aprovado` → `implementado`; a aprovação é sempre humana, e nenhuma fase começa antes da aprovação da anterior.
 - Requisitos em EARS (`QUANDO … ENTÃO o sistema DEVE …`), com valores concretos. Dúvidas viram perguntas, nunca suposições.
@@ -71,13 +71,14 @@ my-spec-kit/
 │   │   ├── spec-design/SKILL.md
 │   │   ├── spec-tasks/SKILL.md
 │   │   ├── spec-implement/SKILL.md
-│   │   └── spec-style/SKILL.md        # só para tipo front
+│   │   └── spec-style/SKILL.md        # só para os tipos front e fullstack
 │   ├── specs/
 │   │   ├── README.md
 │   │   └── _templates/
 │   │       ├── tasks.md               # comum aos dois tipos
 │   │       ├── api/{requirements,design}.md
-│   │       └── front/{requirements,design}.md
+│   │       ├── front/{requirements,design}.md
+│   │       └── fullstack/{requirements,design}.md
 │   ├── steering/{product,tech,structure}.md
 │   └── instructions/
 │       └── sdd.md                     # bloco do fluxo de specs
@@ -131,7 +132,7 @@ my-spec-kit/
 │   ├── spec-design/SKILL.md           # gerenciado
 │   ├── spec-tasks/SKILL.md            # gerenciado
 │   ├── spec-implement/SKILL.md        # gerenciado
-│   └── spec-style/SKILL.md            # gerenciado, só no tipo front
+│   └── spec-style/SKILL.md            # gerenciado, só nos tipos front e fullstack
 ├── specs/
 │   ├── README.md                      # gerenciado
 │   └── _templates/*.md                # gerenciado (requirements e design na versão do tipo)
@@ -149,19 +150,19 @@ As pastas de feature (`specs/NNN-*/`) **nunca** são tocadas pela CLI.
 
 ### 5.1 Tipo de projeto
 
-O `init` pergunta (ou recebe via `--type`) se o projeto é **`api`** ou **`front`**. Front cobre web e app. O tipo muda apenas:
+O `init` pergunta (ou recebe via `--type`) se o projeto é **`api`**, **`front`** ou **`fullstack`**. Front cobre web e app. Fullstack cobre o monolito que tem telas e API no mesmo projeto (D21). O tipo muda apenas:
 
-| | `api` | `front` |
-| --- | --- | --- |
-| `requirements.md` | NFRs Permissão e Paginação; erro com status HTTP | Referência visual no cabeçalho; NFRs Plataformas, Acessibilidade e Offline |
-| `design.md` | Componentes por camada, Contrato da API, Dados e banco, erros por status HTTP | Telas e navegação, Componentes, Dados e estado, Integrações, Erros e estados vazios |
-| Skill extra | — | `/spec-style` |
+| | `api` | `front` | `fullstack` |
+| --- | --- | --- | --- |
+| `requirements.md` | NFRs Permissão e Paginação; erro com status HTTP | Referência visual no cabeçalho; NFRs Plataformas, Acessibilidade e Offline | Módulo e Referência visual no cabeçalho; NFRs Permissão, Paginação, Plataformas e Acessibilidade; erro com status HTTP e mensagem exibida |
+| `design.md` | Componentes por camada, Contrato da API, Dados e banco, erros por status HTTP | Telas e navegação, Componentes, Dados e estado, Integrações, Erros e estados vazios | Componentes por camada, Contrato da API, Dados e banco, Telas e navegação, Componentes de interface, Dados e estado na interface, erros com status HTTP e estado da tela |
+| Skill extra | — | `/spec-style` | `/spec-style` |
 
-As skills de fase, o `tasks.md`, o README e o steering são os mesmos para os dois tipos. As seções da metodologia (comportamento preservado, impacto, decisões, testes, checklist) existem nos dois templates, e um teste garante isso.
+As skills de fase, o `tasks.md`, o README e o steering são os mesmos para todos os tipos. As seções da metodologia (comportamento preservado, impacto, decisões, testes, checklist) existem em todos os templates, e um teste garante isso.
 
 ### 5.2 Padrões visuais opcionais (`style.md`)
 
-Em projetos front, a pessoa pode querer definir cores, tipografia, bordas, modo escuro etc. Isso **não é obrigatório**:
+Em projetos front e fullstack, a pessoa pode querer definir cores, tipografia, bordas, modo escuro etc. Isso **não é obrigatório**:
 
 - O kit **não** instala `style.md`. Ele só passa a existir quando a pessoa chama `/spec-style [o que definir]`.
 - A skill parte do que já existe no código (arquivo de tokens/tema, variáveis CSS) e pergunta só o que falta. Define apenas os temas pedidos.
@@ -222,7 +223,7 @@ A versão não fica no marcador (ela está no manifesto), para o marcador não m
 | Entregas obrigatórias (ex.: script de banco, documentação da API) | `tech.md` › **Entregas obrigatórias** | Entram na verificação final do `tasks.md`. |
 | Verificação manual | `tech.md` › **Verificação manual** | `spec-implement` diz como conferir a entrega. |
 | Avisos ativos (restrições temporárias) | `tech.md` › **Avisos ativos** ou arquivo de instruções | `spec-design` respeita. |
-| Padrões visuais (front, opcional) | `style.md` | `spec-design` e `spec-implement` seguem, se existir. |
+| Padrões visuais (front e fullstack, opcional) | `style.md` | `spec-design` e `spec-implement` seguem, se existir. |
 | Política de branch e commit | arquivo de instruções do projeto (sem regra, o histórico de commits); por padrão, nunca commit na branch principal | `spec-new` segue a de branch; `/git` segue as duas e não roda verificações (D20). |
 
 ## 7. Conteúdo do `core/`
@@ -304,7 +305,7 @@ export interface AgentAdapter {
 
 | Comando | Comportamento |
 | --- | --- |
-| `my-spec-kit init [--type api\|front] [--agent claude\|gemini\|antigravity\|all] [--replace-agents] [--dry-run] [--yes] [--force]` | Sem `--type`: pergunta; em modo não interativo, `--type` é obrigatório. Se já houver manifesto, usa o tipo registrado e recusa trocar de tipo. Monta o plano (criar / sem mudança / conflito / já existe / remover órfãos), mostra, pede confirmação (`--yes` pula; sem terminal, exige `--yes`) e aplica; grava o manifesto. `--agent` aceita um agente, uma lista separada por vírgula ou `all` (todos os adapters); sem ele, os agentes do manifesto ou, num projeto novo, `claude`. Por padrão, soma os agentes aos já instalados; `--replace-agents` substitui os instalados pelos novos (para migrar de agente). Rodar de novo é seguro (idempotente). |
+| `my-spec-kit init [--type api\|front\|fullstack] [--agent claude\|gemini\|antigravity\|all] [--replace-agents] [--dry-run] [--yes] [--force]` | Sem `--type`: pergunta; em modo não interativo, `--type` é obrigatório. Se já houver manifesto, usa o tipo registrado e recusa trocar de tipo. Monta o plano (criar / sem mudança / conflito / já existe / remover órfãos), mostra, pede confirmação (`--yes` pula; sem terminal, exige `--yes`) e aplica; grava o manifesto. `--agent` aceita um agente, uma lista separada por vírgula ou `all` (todos os adapters); sem ele, os agentes do manifesto ou, num projeto novo, `claude`. Por padrão, soma os agentes aos já instalados; `--replace-agents` substitui os instalados pelos novos (para migrar de agente). Rodar de novo é seguro (idempotente). |
 | `my-spec-kit update [--dry-run] [--yes] [--force]` | Exige manifesto e usa o `projectType` registrado nele. Atualiza os arquivos gerenciados que não foram editados; lista os editados como conflito; acrescenta arquivos novos do kit; remove do projeto os arquivos que o kit deixou de ter, **só** se não foram editados. Sementes nunca são alteradas. |
 | `my-spec-kit doctor` | Só lê. Verifica: manifesto válido; versão instalada × versão da CLI; arquivos gerenciados ausentes ou editados; bloco presente no `CLAUDE.md`; placeholders `<completar>` no steering; Status inválidos e numeração duplicada em `specs/`. Código de saída ≠ 0 quando há erro. |
 | `my-spec-kit version` | Mostra a versão da CLI e, se houver manifesto, a versão instalada no projeto. |
@@ -355,3 +356,4 @@ Códigos de saída: `0` sucesso; `1` erro ou cancelamento (nada foi alterado); `
 | D18 | (Revista por D19.) Remover o adapter do Antigravity (e `core/instructions/rules.md`); os agentes do kit passam a ser Claude Code, Gemini CLI e, a seguir, Codex. Os campos `instructionsSource`, `skills`, `specs` e `steeringHint` da interface ficam, para agentes futuros | Manter o Antigravity com um fluxo próprio | O kit fica focado em agentes que usam o mesmo fluxo de specs; um segundo fluxo (regras sem specs) tinha conteúdo e testes próprios só para um agente. Projetos que já instalaram com `--agent antigravity` passam a falhar no `init`/`update` com "ainda não é suportado"; os arquivos já instalados ficam no projeto. |
 | D19 | Adapter completo para Antigravity: skills em `.agents/skills/<nome>/SKILL.md` (frontmatter YAML padrão com `name` e `description`), bloco SDD em `AGENTS.md` com includes `@[label](caminho)` e perguntas interativas apontadas para `ask_question`. Fluxo de specs completo (`specs: true`), idêntico aos outros agentes. `--agent antigravity` suportado e `--replace-agents` permite migrar/substituir o agente anterior (ex.: de Claude para Antigravity) limpando com segurança as skills gerenciadas do agente antigo | Fluxo sem specs / não suportar Antigravity | O Antigravity suporta nativamente Agent Skills padrão e regras de projeto via `AGENTS.md`. Compartilhar o mesmo fluxo de specs entre Claude, Gemini CLI e Antigravity permite ao desenvolvedor usar qualquer ferramenta no mesmo repositório e migrar entre elas a qualquer momento sem perder specs nem steering. |
 | D20 | Por padrão, nunca commit na branch principal (só se o arquivo de instruções permitir), e `/git` não roda testes, build nem lint: a verificação fica na tarefa final do `tasks.md`. Regra no bloco de instruções e na skill | Regra de branch só quando o projeto define / rodar os comandos de verificação a cada commit | Commit na principal pula a revisão do PR. Durante a feature, o commit serve para salvar o trabalho; rodar a verificação a cada um gasta tempo e tokens sem ganho, já que a verificação final roda antes do PR. Hooks do repositório continuam valendo. |
+| D21 | Terceiro tipo de projeto, `fullstack`, para monolitos com telas e API: templates próprios que juntam as seções de `api` e de `front`, com `/spec-style` instalada. Seções e NFRs que não se aplicam a uma feature recebem "Não se aplica" | Escolher `api` ou `front` e acrescentar seções à mão / instalar os dois pares de templates | Com um dos dois tipos, o design de uma feature que toca servidor e tela perde as seções da outra parte, e a cobertura delas deixa de ser guiada. Um par de templates por tipo mantém a regra de D11 (a seção certa no template guia o modelo) e não muda skills, `tasks.md` nem steering. |

@@ -95,6 +95,18 @@ describe('init', () => {
     expect((await manifest()).projectType).toBe('front');
   });
 
+  it('installs the fullstack templates and spec-style, without creating style.md', async () => {
+    expect(await init(['--type', 'fullstack', '--yes'])).toBe(0);
+
+    const files = await snapshot();
+    expect(files).toHaveProperty(['.claude/skills/spec-style/SKILL.md']);
+    expect(files).not.toHaveProperty(['docs/steering/style.md']);
+    const design = await read('specs/_templates/design.md');
+    expect(design).toContain('## Contrato da API');
+    expect(design).toContain('## Telas e navegação');
+    expect((await manifest()).projectType).toBe('fullstack');
+  });
+
   it('installs the kit for Gemini CLI as commands and GEMINI.md', async () => {
     expect(await init(['--type', 'api', '--agent', 'gemini', '--yes'])).toBe(0);
 
@@ -152,7 +164,7 @@ describe('init', () => {
 
   it('rejects an invalid type and an unsupported agent', async () => {
     expect(await init(['--type', 'mobile', '--yes'])).toBe(1);
-    expect(output).toContain('api ou front');
+    expect(output).toContain('api, front ou fullstack');
 
     expect(await init(['--type', 'api', '--agent', 'codex', '--yes'])).toBe(1);
     expect(output).toContain('ainda não é suportado');

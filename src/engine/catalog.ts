@@ -4,9 +4,9 @@ import type { AgentAdapter } from '../adapters/types.js';
 import { normalizeEol } from './hash.js';
 import type { CatalogEntry, ProjectType } from './types.js';
 
-/** Skills instaladas só em um tipo de projeto. */
-const TYPE_ONLY_SKILLS: Readonly<Record<string, ProjectType>> = {
-  'spec-style': 'front',
+/** Skills instaladas só em alguns tipos de projeto. */
+const TYPE_ONLY_SKILLS: Readonly<Record<string, readonly ProjectType[]>> = {
+  'spec-style': ['front', 'fullstack'],
 };
 
 /** Monta a lista de arquivos que o kit instala para um tipo de projeto e um conjunto de agentes. */
@@ -22,7 +22,7 @@ export async function buildCatalog(
   for (const adapter of adapters) {
     for (const skill of await listDirs(join(coreDir, 'skills'))) {
       const onlyFor = TYPE_ONLY_SKILLS[skill];
-      if (onlyFor && onlyFor !== projectType) continue;
+      if (onlyFor && !onlyFor.includes(projectType)) continue;
       if (adapter.skills && !adapter.skills.includes(skill)) continue;
 
       for (const file of await listFiles(join(coreDir, 'skills', skill))) {
